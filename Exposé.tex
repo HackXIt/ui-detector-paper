@@ -1,0 +1,239 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
+%\documentclass[Master,BMR,english]{BASE/twbook} 
+\documentclass[Proposal,BIC,english,fhCitStyle,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
+\usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
+\usepackage[T1]{fontenc}    % Zeichen-Enkodierung
+\usepackage{blindtext}      % Platzhaltertexte
+\usepackage{minted}         % Darstellung von Code
+\usepackage{comment}        % Auskommentieren von ganzen Passagen
+\usepackage{csquotes}
+\usepackage{algorithm}      % Umgebung f Algorithmen
+\usepackage[noend]{algpseudocode}
+                            % Wenn Sie während Ihrer Arbeit
+                            % merken, dass Sie zusätzliche Funktionen
+                            % benötigen ist hier ein guter Platz um
+                            % weitere Packages zu laden
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
+\usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
+%\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
+\addbibresource{Literatur.bib}                              % Literatur-File definieren
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
+\title{Precision at Pixel-Level:\\YOLOv8 vs. Conventional UI Testing}
+
+\author{Nikolaus Rieder}
+\studentnumber{2010258028}
+%\author{Titel Vorname Name, Titel\and{}Titel Vorname Name, Titel}
+%\studentnumber{XXXXXXXXXXXXXXX\and{}XXXXXXXXXXXXXXX}
+
+\supervisor{Dr. Dietmar Millinger}
+%\supervisor[Begutachter]{Titel Vorname Name, Titel}
+%\supervisor[Begutachterin]{Titel Vorname Name, Titel}
+%\secondsupervisor{Titel Vorname Name, Titel}
+%\secondsupervisor[Begutachter]{Titel Vorname Name, Titel}
+%\secondsupervisor[Begutachterinnen]{Titel Vorname Name, Titel}
+
+\place{Wien}
+\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget classification, automated testing, comparative study}
+\setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Headers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Dokuments
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
+\chapter{Problem description}
+% ... user interfaces ... ?
+Manual testing of embedded devices in behavior driven design is a very labor-intensive process, due to the involvement of writing behavior specifications and maintaining test cases alongside the duration of executing these tests manually on the system. This process gets more complicated and time-consuming the longer the actual product remains on the market, since the execution time of the regression test cases scales with the time on market and breaking changes introduced with software releases may require part or complete rework of the existing test repository. Test automation promises to reduce this workload for manual testers with the ability of programming abstractions and repeating patterns, alongside faster than human execution times, but when it comes to user interfaces, some of those problems get passed on. In regular user interface frameworks, the ability to obtain metadata (e.g. UI element position, size, shape, function, ...) about the user interface from the actual test target or a test framework can mitigate or nullify these problems, depending on the technologies involved. But this ability is usually not existent when it comes to embedded systems, especially if the controllers involved do not have the performance capabilities to provide such metadata or if the firmware development does not have the time or skills to expose such testing functionality properly. The former is not easily changeable without increasing cost and labor, while the latter usually requires development of simulation or additional hardware interfaces. In the special case of security systems (e.g. fire alarm systems, emergency call systems) these problems must be addressed nevertheless, to assess the quality of the system in a testing environment before a serious bug can cause harm to real infrastructure or even human lives. 
+
+From a test automation perspective in the field of embedded security systems, it is mandatory to obtain metadata about the user interface during testing to properly initiate interactions and also have the ability to compare against set expectations. In the case of the Schrack Seconet nurse call system, this involves the specification of coordinates of user interface elements in the test case to perform a defined routine on the element. Furthermore, extensive logging is used to confirm the execution of a given functionality. Depending on the performed function, results can also be assessed with digital or analog control boards which verify against expected signal states on an output of the system.
+However, as development on the product continues and changes on the user interface design are made, these specifications of the user interface elements can be rendered obsolete. Even something as simple as moving a button to a different position on the screen will cause the test case to fail, even though the functionality still remains, resulting in false-positives. Such product changes than propagate into necessary rework of the test cases, possibly prolonging development cycles and pushing release dates.
+The problem becomes especially apparent when new user interface designs are being developed and the user interface is entirely different from the previous, although the functionality to be tested remains similar or identical.
+UI design changes therefor result in increased costs and labor-time. If this increase was not anticipated beforehand, it would have a negative impact on the project and in effect also the quality of the product, as things tend to get rushed.
+\section{Problem context at Schrack Seconet}
+% ... add additional problem context in the specific domain of Schrack Seconet ...
+\chapter{Research state}
+% .. TBD ...
+% note list of relevant papers here (will need to be added to the bib reference)
+\begin{comment}
+    ...
+\end{comment}
+\chapter{Research questions}
+\section{How Does YOLOv8 enhance UI Widget Detection?}
+“For this I will measure the YOLOv8 accuracy and speed versus traditional methods”
+
+\section{What Challenges Does YOLOv8 Overcome in Automated Embedded UI Testing?}
+“To answer this, I will record error types and their frequency in traditional UI testing”
+
+\section{How Effectively Does YOLOv8 Detect and Classify Widgets in Various UI Layouts?}
+“The answer lies in assessing detection and classification accuracy in diverse UIs”
+
+\section{What Limitations of Current Testing Methods Does YOLOv8 Address?}
+“Meaning, I will compare manual testing \& basic automation with YOLOv8”
+
+\chapter{Method}
+\blindtext
+\section{Outline}
+\blindtext
+\section{Methodology}
+\blindtext
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Examples from the LaTex Template
+\begin{comment}
+\chapter{Erste Überschrift der Tiefe 1 (chapter)}
+Etwas Text... Hier kommen noch einige Abkürzunge vor zum Beispiel \ac{ABC},\ac{WWW} und \ac{ROFL}.
+
+\section{Erste Überschrift Tiefe 2 (section)}
+\blindtext
+
+\subsection{Erste Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsubsection{Erste Überschrift Tiefe 4 (subsubsection)}
+\blindtext
+
+\chapter{Zweite Überschrift der Tiefe 1 (chapter)}
+\blindtext
+
+\section{Zweite Überschrift Tiefe 2 (section)}
+\blindtext
+
+\subsection{Zweite Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsection{Dritte Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsubsection{Zweite Überschrift Tiefe 4 (subsubsection)}
+\blindtext
+
+\noindent Querverweise werden in \LaTeX{} automatisch erzeugt und verwaltet, damit sie leicht aktualisiert werden können. Hier wird zum Beispiel auf Abbildung \ref{Abb1} verwiesen.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/buchruecken}
+\caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb1}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/buchruecken}
+\caption{2. Beispiel für die Beschriftung eines Buchrückens.}\label{Abb2}
+\end{figure}
+
+Und hier ist ein Verweis auf Tabelle \ref{tab1}. Das gezeigte Tabellenformat ist nur ein Beispiel. Tabellen können individuell gestaltet werden.
+
+\begin{table}[!htbp]
+\centering
+\caption{Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab1}
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie & HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\end{table}
+\begin{table}[!htbp]
+\centering
+\caption{2. Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab2}
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie & HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\end{table}
+
+Hier wird auf die Formel \ref{Gl1} verwiesen.
+
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl1}
+\end{align}
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl2}
+\end{align}
+
+Literaturverweise sollten automatisch verwaltet werden, vor allem, wenn es viele Quellenverweise gibt. Beispiele sind  \cite{Ko05a}, \cite{Ko05b}, \cite{MiGo05}, \cite{TeGo14}, \cite{HuHa07}, \cite{HuZi10}, \cite{ZiKu07}, \cite{He07}, \cite{SIE11}, \cite{SIE14}, \cite{ISO98}, \cite{ATM11}, \cite{Hu11}, \cite{Po10}. Das verwendete Zitierformat (bzw.~das Format des Literaturverzeichnisses) ist entspechend der Vorgaben der Studiengänge zu wählen.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Dritte Überschrift der Tiefe 1 (chapter)}
+Hier wird etwas Quellcode dargestellt:
+\begin{listing}[htbp]
+\begin{minted}[
+    frame=single,
+    framesep=2mm,
+    baselinestretch=1.2,
+    bgcolor=white,
+    fontsize=\footnotesize,
+    linenos
+    ]{c}
+#include <iostream>
+
+void SayHello(void)
+{
+    // Kommentar
+    cout << "Hello World!" << endl;
+}
+
+int main(int argc, char **argv)
+{
+    SayHello();
+    return 0;
+}
+\end{minted}
+\caption{Hello-World}
+\end{listing}
+
+
+\section{Algorithms}
+
+
+Use a defined environment for algorithms.
+
+Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.overleaf.com/latex/examples/euclids-algorithm-an-example-of-how-to-write-algorithms-in-latex/mbysznrmktqf}) .
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{algorithm}
+\caption{Euclid’s algorithm}\label{alg:euclid}
+\begin{algorithmic}[1]
+\Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+\State $r\gets a\bmod b$
+\While{$r\not=0$}\Comment{We have the answer if r is 0}
+\State $a\gets b$
+\State $b\gets r$
+\State $r\gets a\bmod b$
+\EndWhile\label{euclidendwhile}
+\State \textbf{return} $b$\Comment{The gcd is b}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+%
+\end{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
+\clearpage                                                       % Beginne neue Seite
+
+\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
+%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
+\clearpage
+
+\listoffigures                                                   % Abbildungsverzeichnis
+\clearpage
+
+\listoftables                                                    % Tabellenverzeichnis
+\clearpage
+
+\listoflistings                                                  % Quellcodeverzeichnis
+\clearpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{\listacroname}
+\chapter*{\listacroname}
+\begin{acronym}[XXXXX]
+    \acro{YOLO}[YOLO]{You only live once}
+    \acro{UI}[UI]{User interface}
+    \acro{LVGL}[LVGL]{Light and versatile graphics library}
+\end{acronym}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
+\clearpage
+\appendix
+\chapter{Anhang A}
+\clearpage
+\chapter{Anhang B}
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts

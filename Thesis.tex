@@ -1,0 +1,216 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
+%\documentclass[Master,BMR,english]{BASE/twbook} 
+\documentclass[Bachelor,BIC,english,fhCitStyle,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
+\usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
+\usepackage[T1]{fontenc}    % Zeichen-Enkodierung
+\usepackage{blindtext}      % Platzhaltertexte
+\usepackage{minted}         % Darstellung von Code
+\usepackage{comment}        % Auskommentieren von ganzen Passagen
+\usepackage{csquotes}
+\usepackage{algorithm}      % Umgebung f Algorithmen
+\usepackage[noend]{algpseudocode}
+                            % Wenn Sie während Ihrer Arbeit
+                            % merken, dass Sie zusätzliche Funktionen
+                            % benötigen ist hier ein guter Platz um
+                            % weitere Packages zu laden
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
+\usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
+%\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
+\addbibresource{Literatur.bib}                              % Literatur-File definieren
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
+\title{Precision at Pixel-Level:\\YOLOv8 vs. Conventional UI Testing}
+
+\author{Nikolaus Rieder}
+\studentnumber{2010258028}
+%\author{Titel Vorname Name, Titel\and{}Titel Vorname Name, Titel}
+%\studentnumber{XXXXXXXXXXXXXXX\and{}XXXXXXXXXXXXXXX}
+
+\supervisor{Dr. Dietmar Millinger}
+%\supervisor[Begutachter]{Titel Vorname Name, Titel}
+%\supervisor[Begutachterin]{Titel Vorname Name, Titel}
+%\secondsupervisor{Titel Vorname Name, Titel}
+%\secondsupervisor[Begutachter]{Titel Vorname Name, Titel}
+%\secondsupervisor[Begutachterinnen]{Titel Vorname Name, Titel}
+
+\place{Wien}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Danksagung/Kurzfassung/Schlagworte
+% Abstract
+\outline{
+Developing and executing test suites on embedded devices with a graphical user interface can be a time-consuming and exhaustive process. This research investigates wheter the implementation of a machine learning model can improve the speed and accuracy of widget detection on such test targets, when compared to manual and automated test development methods. The proposed solution attempts to reduce the lengthy process of identifying and locating widgets by training a YOLOv8 based model specifically on the \acro{LVGL} framework and integrating the information predicted by the model into Robot Framework testcases. By leveraging the \acro{LVGL} simulator for PC, a varied and randomized dataset is synthesized containing screenshots of user interfaces with realistic design aspects. This papers solution makes use of a design file system to control the random behaviour of the implemented UI generator in realistically aligned layouts. When determining coordinates of widgets either manually or automatically, the performed test development for embedded systems is shown to be an error-prone process with a high maintenance aspect and scaling problems. It is anticipated, that the implementation of a ML model will address these challenges and can outperform the existing testing methodologies in speed and accuracy. Through literature findings in [a] and [b], comparisons to traditional testing methodologies, such as [x] and [y], are made. This knowledge will be deepened when benchmarked against a fine-tuned version of the model, that will be trained on manually labeled image data from proprietary user interface designs provided by the involved company. In conclusion, the integration into a fully automated test pipeline via the usage of the Robot Framework will provide evidence of the effectiveness of this fine-tuned model when analatically compared against the manual and automatic testcases developed in the process.
+%for the purpose of performing test automation which targets such devices. 
+It makes use of the light and versatile graphics library (\acro{LVGL}) to simulate user interfaces and synthesize screenshot datasets. By showcasing the challenges in automated UI testing on embedded systems, the paper will attempt to reduce the frequency of error types from manual and automated test procedures. Through findings in existing literature, it will draw a comparison of testing methodologies involved, in hopes that the implementation will improve accuracy and speed of widget detection. The model will be integrated into the Robot Framework by providing metadata for executed test routines. Through comparative analysis, it will be shown how effectively a machine learning model based on YOLOv8 can detect and classify widgets in varied and randomized user interface layouts. The solution aims to address the limitations of traditional manual and automatic testing methods that can be overcome through this implementation.
+}
+\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget classification, automated testing, comparative study}
+% Acknowledgements
+\acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience were unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up to this point.}
+\setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Headers
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Dokuments
+\begin{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Examples from the LaTex Template
+\begin{comment}
+\chapter{Erste Überschrift der Tiefe 1 (chapter)}
+Etwas Text... Hier kommen noch einige Abkürzunge vor zum Beispiel \ac{ABC},\ac{WWW} und \ac{ROFL}.
+
+\section{Erste Überschrift Tiefe 2 (section)}
+\blindtext
+
+\subsection{Erste Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsubsection{Erste Überschrift Tiefe 4 (subsubsection)}
+\blindtext
+
+\chapter{Zweite Überschrift der Tiefe 1 (chapter)}
+\blindtext
+
+\section{Zweite Überschrift Tiefe 2 (section)}
+\blindtext
+
+\subsection{Zweite Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsection{Dritte Überschrift Tiefe 3 (subsection)}
+\blindtext
+
+\subsubsection{Zweite Überschrift Tiefe 4 (subsubsection)}
+\blindtext
+
+\noindent Querverweise werden in \LaTeX{} automatisch erzeugt und verwaltet, damit sie leicht aktualisiert werden können. Hier wird zum Beispiel auf Abbildung \ref{Abb1} verwiesen.
+
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/buchruecken}
+\caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb1}
+\end{figure}
+\begin{figure}[!htbp]
+\centering
+\includegraphics[width=0.5\linewidth]{PICs/buchruecken}
+\caption{2. Beispiel für die Beschriftung eines Buchrückens.}\label{Abb2}
+\end{figure}
+
+Und hier ist ein Verweis auf Tabelle \ref{tab1}. Das gezeigte Tabellenformat ist nur ein Beispiel. Tabellen können individuell gestaltet werden.
+
+\begin{table}[!htbp]
+\centering
+\caption{Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab1}
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie & HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\end{table}
+\begin{table}[!htbp]
+\centering
+\caption{2. Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab2}
+\begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
+Datum & Thema & Raum\\\hline
+20.08.2008 & Graphentheorie & HS 3.13\\
+01.10.2008 & Biomathematik & HS 1.05\\\hline
+\end{tabular}
+\end{table}
+
+Hier wird auf die Formel \ref{Gl1} verwiesen.
+
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl1}
+\end{align}
+\begin{align}
+x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl2}
+\end{align}
+
+Literaturverweise sollten automatisch verwaltet werden, vor allem, wenn es viele Quellenverweise gibt. Beispiele sind  \cite{Ko05a}, \cite{Ko05b}, \cite{MiGo05}, \cite{TeGo14}, \cite{HuHa07}, \cite{HuZi10}, \cite{ZiKu07}, \cite{He07}, \cite{SIE11}, \cite{SIE14}, \cite{ISO98}, \cite{ATM11}, \cite{Hu11}, \cite{Po10}. Das verwendete Zitierformat (bzw.~das Format des Literaturverzeichnisses) ist entspechend der Vorgaben der Studiengänge zu wählen.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Dritte Überschrift der Tiefe 1 (chapter)}
+Hier wird etwas Quellcode dargestellt:
+\begin{listing}[htbp]
+\begin{minted}[
+    frame=single,
+    framesep=2mm,
+    baselinestretch=1.2,
+    bgcolor=white,
+    fontsize=\footnotesize,
+    linenos
+    ]{c}
+#include <iostream>
+
+void SayHello(void)
+{
+    // Kommentar
+    cout << "Hello World!" << endl;
+}
+
+int main(int argc, char **argv)
+{
+    SayHello();
+    return 0;
+}
+\end{minted}
+\caption{Hello-World}
+\end{listing}
+
+
+\section{Algorithms}
+
+
+Use a defined environment for algorithms.
+
+Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.overleaf.com/latex/examples/euclids-algorithm-an-example-of-how-to-write-algorithms-in-latex/mbysznrmktqf}) .
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{algorithm}
+\caption{Euclid’s algorithm}\label{alg:euclid}
+\begin{algorithmic}[1]
+\Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
+\State $r\gets a\bmod b$
+\While{$r\not=0$}\Comment{We have the answer if r is 0}
+\State $a\gets b$
+\State $b\gets r$
+\State $r\gets a\bmod b$
+\EndWhile\label{euclidendwhile}
+\State \textbf{return} $b$\Comment{The gcd is b}
+\EndProcedure
+\end{algorithmic}
+\end{algorithm}
+%
+\end{comment}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
+\clearpage                                                       % Beginne neue Seite
+
+\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
+%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
+\clearpage
+
+\listoffigures                                                   % Abbildungsverzeichnis
+\clearpage
+
+\listoftables                                                    % Tabellenverzeichnis
+\clearpage
+
+\listoflistings                                                  % Quellcodeverzeichnis
+\clearpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{\listacroname}
+\chapter*{\listacroname}
+\begin{acronym}[XXXXX]
+    \acro{YOLO}[YOLO]{You only live once}
+    \acro{UI}[UI]{User interface}
+    \acro{LVGL}[LVGL]{Light and versatile graphics library}
+\end{acronym}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
+\clearpage
+\appendix
+\chapter{Anhang A}
+\clearpage
+\chapter{Anhang B}
+\end{document}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts
