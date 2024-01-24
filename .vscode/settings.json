@@ -1,0 +1,54 @@
+{
+    "editor.minimap.enabled": false,
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.view.pdf.viewer": "tab",
+    "latex-workshop.latex.tools": [
+        {
+            "name": "pdflatex",
+            "command": "pdflatex",
+            "args": [
+                "-synctex=1",
+                "-interaction=nonstopmode",
+                "-file-line-error",
+                "-shell-escape",
+                "-pdf",
+                "-output-directory=%OUTDIR%",
+                "%DOC%"
+            ]
+        },
+        {
+            "name": "biber",
+            "command": "biber",
+            "args": [
+                "--bblencoding=utf8",
+                "-output-directory=%OUTDIR%",
+                "%DOCFILE%"
+            ]
+        },
+        // ... other tools ...
+    ],
+    "latex-workshop.latex.recipes": [
+        {
+            "name": "pdflatex -> biber -> pdflatex*2",
+            "tools": [
+                "pdflatex",
+                "biber",
+                "pdflatex",
+                "pdflatex"
+            ]
+        },
+        // ... other recipes ...
+    ],
+    "latex-workshop.latex.recipe.default": "pdflatex -> biber -> pdflatex*2",
+    "latex-workshop.latex.outDir": "%DIR%/build",
+    "latex-workshop.latex.clean.fileTypes": [
+        "*.aux",
+        "*.log",
+        "*.synctex.gz",
+        "*.fls",
+        "*.fdb_latexmk",
+        // add other file extensions as needed
+    ],
+    // ... other tools ...
+],
+}
