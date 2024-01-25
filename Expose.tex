@@ -17,7 +17,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
 \usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
 %\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
-\addbibresource{literature.bib}                              % Literatur-File definieren
+\addbibresource{Literature.bib}                              % Literatur-File definieren
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
 \title{Precision at Pixel-Level:\\YOLOv8 vs. Conventional UI Testing}
 
@@ -49,9 +49,9 @@ In the upcoming thesis, I plan to leverage existing machine learning models for 
 \newpage
 \chapter{Problem description}
 % ... user interfaces ... ?
-Performing manual testing on embedded devices, particularly in security systems like the Schrack Seconet nurse call system, is a labor-intensive process. It involves writing specifications and maintaining test cases, as well as executing these tests manually on the system. Specifically, the maintenance of these formally written test cases becomes increasingly complex and time-consuming with the product's time on the market. This problem is exaggarated in hardware products that inherently are part of the buildings infrastructure, where general assumption is a long-time usage of the product itself. In the example of a nurse call system, a typical lifespan of devices on site can easily exceed 5 years, with the product itself being on the market for 10 years or more (as it is also the case for the Visocall IP system).
+Performing manual system testing on embedded devices, particularly in security systems like the Schrack Seconet nurse call system, is a labor-intensive process. It involves writing specifications and maintaining test cases, as well as executing these tests manually on the system. Specifically, the maintenance of these formally written test cases becomes increasingly complex and time-consuming with the product's time on the market. This problem is exaggarated in hardware products that inherently are part of the buildings infrastructure, where general assumption is a long-time usage of the product itself. In the example of a nurse call system, a typical lifespan of devices on site can easily exceed 5 years, with the product itself being on the market for 10 years or more (as it is also the case for the Visocall IP system).
 This means, for the firmware and software employed in these systems, a suite of regression tests is built up from the beginning of the product's development up to the end of its life cycle. To ensure quality of the product, the repeated execution of these regression tests is mandatory, especially if potential bugs in these systems can cause harm to human lives or infrastructure.
-Testing each and every one of those regression tests with every single build of the software during development is often not humanly manageable, so it is an acceptable approach, to perform a complete execution of the regression suite only once at the end of the development cycle. This is the general approach when the product development is organized in the V-Model (see figure \ref{fig:v-model}), where the regression tests are executed in the verification phase.
+Testing each and every one of those regression tests with every single build of the software during development is often not humanly manageable, so it is an acceptable approach, to perform a complete execution of the regression suite only once at the end of the development cycle. This is the general approach when the product development is organized in the V-Model, where the regression tests are executed in the verification phase.
 % TODO add figure of V-Model here
 
 For a long time, this approach was sufficient even if costly, but as time moves on and features get added, the test repository will grow in size. With every release, the time span of the manual execution time will increase and therefor stretch the release date of the software.
@@ -59,29 +59,29 @@ In the last two decades, this problem was mitigated with the usage of test autom
 % reference highlighting the benefits of test automation compared to manual testing
 However, when it comes to user interfaces, it is still a common approach to perform manual testing, as it is difficult to automate in the field of embedded systems.
 % reference showing the difficulties of test automation in embedded systems
-In mobile devices and web frontends, is is shown that test automation can be applied to improve the quality of the product, but this largely originates from the increase in frameworks and tools available to the test automation developer.
+In mobile devices and web frontends, it is shown that test automation can be applied to improve the quality of the product, but this largely originates from the increase in frameworks and tools available to the test automation developer.
 % reference showing the usage of test automation in mobile devices and web frontends
 But legacy systems, which typically rely on hardware with limited performance capabilities, may lack the means to provide the TA developer with the necessary UI metadata to assess the visual aspects and functionality of the product. Such metadata includes the position, size, visual appearance and function of the user interface elements. In embedded systems, a firmware developer would have to implement functionality to expose this metadata to the test automation developer, increasing development time, complexity and cost.
 
-One approach \cite[]{approachA} relies on simulation of peripherals and hardware interfaces of the embedded system, with the user interface being rendered on a general purpose computer. The required metadata for testing can then be obtained from the simulation, which is usually easier to implement than exposing the metadata from the actual hardware.
+One approach in system-in-the-loop systems testing relies on simulation of peripherals and hardware interfaces of the embedded system. In such systems the user interface will be rendered on a general purpose computer. The required metadata for testing can then be obtained from the simulation, which then is easier to implement than exposing the metadata from the actual hardware.
 % reference showing the usage of simulation in embedded systems
 This approach is not always feasible, as the simulation of the hardware interfaces and peripherals can be very complex and time-consuming, especially if the firmware development does not have the time or skills to implement such a simulation. Additionally, it potentially hides bugs in the firmware, which would be exposed in a real-world scenario once the firmware is deployed on the actual product.
 % possibly highlight how much time and effort it takes to develop such a simulation
 % reference providing example of unfound bugs in simulation versus real-world scenario
 
-Another approach \cite[]{approachB} is the usage of additional and specialized testing hardware, connected to the embedded system, which will read data being passed to the display and provide the test automation developer with the necessary metadata. This approach is also not always feasible, as it requires additional hardware to be developed and manufactured, which increases cost and labor.
+Another approach is the usage of additional and specialized testing hardware, connected to the embedded system. In the case display, controllers are required, which will read data being passed to the display and provide the test automation developer with the necessary testing metadata. This approach is also not always feasible, as it requires additional hardware to be developed and manufactured, which can increase cost and labor.
 % possibly highlight how much time and effort it takes to develop such hardware
 % reference providing example of additional test hardware reading data from display
 
-Since both of these examplaratory approaches are not always achievable, it is understandable why the tendency to perform manual UI testing on embedded systems is still prevalent.
+Since both of these examplaratory approaches are not always achievable, it can be understandable why there is a tendency to perform manual UI testing on embedded systems is still prevalent.
 However, as development time and release cycles decrease through the usage of agile methodologies, the bottleneck of manual regression testing will become less manageable up to the point where there simply is not enough time to execute all test cases in a constrained timeframe.
 % reference showcasing the difficulties in keeping test development up to date with ongoing product development in manual testing
 Looking at the already existing success of machine learning models in test automation for web frontends and mobile devices, it is fair to assume that the employment of this technology will improve quality for embedded systems. In the following pages, several research questions regarding the popular object detection model YOLOv8 are stated, which aim to assess the usage of machine learning in test automation for user interfaces on embedded devices. It is to be determined if the ability of such models can outperform the existing manual or automated testing methodologies used for embedded systems.
 \section{Problem context at Schrack Seconet}
 % ... add additional problem context in the specific domain of Schrack Seconet ...
 % NOTE Publicly accessible information should be used for examples on the context
-The UI framework by Schrack Seconet is the light and versatile graphics library \acro{LVGL}, a popular choice in embedded hardware for developing user interfaces. This framework already comes with implementations that allow for simulation of the UI rendering on a development machine, which already improves development time since it doesn't require display hardware to work on UI design.
-But being a library targeted at embedded systems, there are no integrated testing tools that would allow a test automation developer to verify the functionality of those designs on the actual hardware. Since the nurse call system \emphasis{"Visocall IP"} is a distributed embedded system, it relies on multiple hardware devices to interact with each other and UI functionality is tied to the requests and responses of the system as a whole.
+The used UI framework by Schrack Seconet is the light and versatile graphics library LVGL, a popular choice in embedded hardware for developing user interfaces. This framework already comes with implementations that allow for simulation of the UI rendering on a development machine, which already improves development time since it doesn't require display hardware to work on UI design.
+But being a library targeted at embedded systems, there are no integrated testing tools that would allow a test automation developer to verify the functionality of those designs on the actual hardware. Since the nurse call system \begin{em}"Visocall IP"\end{em} is a distributed embedded system, it relies on multiple hardware devices to interact with each other and UI functionality is tied to the requests and responses of the system as a whole.
 When it comes to simulation, it marks unit testing of the user interface as an unusable solution, due to the inherent complexity of the system and the required simulation of multiple devices or peripherals for the UI to function properly.
 Instead, the developers at Schrack Seconet integrated driver modules into the firmware of UI devices, which allows for simulation of user interactions on the devices, mimicking human behaviour on the display. The mimicked behaviour includes interactions such as TOUCH, PRESS, RELEASE, DRAG and combined variations of the aforementioned.
 
@@ -91,7 +91,7 @@ This approach works well for a given user interface design which is not affected
 The latter approach is generally frowned upon in our company, as we prefer a tendency towards black-box-testing, which mitigates the chance of overlooking software bugs due to code blindness. It is preferred for the test automation engineer to have as little knowledge about the implementation of the firmware as possible, so that the test automation engineer can focus on unbiased verification of the target device.
 It also would not be a viable approach to look through the codebase to determine the element coordinates, since it typically is not blatantly written inside the code and would require the tester to work through the programmatic abstractions.
 
-The easiest solution to determine coordinates of UI elements is through the usage of screendumps from the test device itself. The generated image file has the exact dimensions as the device display and it is easy to determine coordinates through generally available image viewers, such as \emphasis{Irfanview}.
+The easiest solution to determine coordinates of UI elements is through the usage of screendumps from the test device itself. The generated image file has the exact dimensions as the device display and it is easy to determine coordinates through generally available image viewers, such as \begin{em}Irfanview\end{em}.
 
 The positions of UI elements is then embedded into automated test case routines, which will perform the defined UI interactions.
 % on functionality or from functionality ??
@@ -108,9 +108,11 @@ A solution, which is capable of dealing with the dynamic nature of user interfac
 % .. TBD ...
 % note list of relevant papers here (will need to be added to the bib reference)
 % this section needs to highlight existing research in the field 
-The topic of the thesis is specific to applying a ML based object detection model to visual testing, commonly known as VGT, on devices of a distributed embedded systems. A direct comparisons in that regard has not been found at the time of writing. Existing research on UI testing from test targets of other fields such as software, mobile devices and web can be used to extract methodologies, comparative analysis and results, to draw conclusions about the proposed quality improvement when using a ML model approach for testing. The main differentiation in the thesis is the existing constraints when testing embedded system, inherited largely from the difficulty of making visual information accessible for test automation purposes when working with embedded devices.
+The topic of the thesis is specific to applying a ML based object detection model to visual testing, commonly known as VGT, on devices of a distributed embedded systems. A direct comparisons in that regard has not been found at the time of writing. But the comprehensive survey on embedded systems testing \autocite{garousiTestingEmbeddedSoftware2018} serves as a good start for systematic approaches.
 
-Since my thesis involves the transitioning from a manual system test suite for the embedded UI, to an automated one with ML capabilities, I have looked at a study in the software development field \autocite{alegrothTransitioningManualSystem2013}, which detailed the results and effects of such a transition. Their findings confirm that an automated visual testing approach can be beneficial and bring improvement.
+Existing research on UI testing from test targets of other fields such as software, mobile devices and web can be used to extract methodologies, comparative analysis and results, to draw conclusions about the proposed quality improvement when using a ML model approach for testing. The main differentiation in the thesis is the existing constraints when testing embedded system, inherited largely from the difficulty of making visual information accessible for test automation purposes when working with embedded devices.
+
+Since my thesis involves the transitioning from a manual system test suite for the embedded UI, to an automated one with ML capabilities, a study in the software development field \autocite{alegrothTransitioningManualSystem2013} was found, which detailed the results and effects of such a transition. Their findings confirm that an automated visual testing approach can be beneficial and bring improvement.
 An additional later study on VGT by the same authors \autocite{alegrothVisualGUITesting2015} analysed the challenges, problems and limitations (CPL) when it comes to transitioning to visual UI testing. In their study, they discovered 58 CPLs, categorized into 26 types. A more thorough investigation of the study is still due in context of applicability on the to be tested embedded system, but it is anticipated that the analytic methodology of this study is also applicable in this thesis.
 \begin{comment}
 In my thesis, a smaller subset of these metrics will be documented throughout the development process of the test cases. The basis for the analysis of the VGT approach will be existing manual visual test cases and automated functional UI test cases using the reverse-engineering approach for UI elements. This combined test set will be compared against the newly created automated test suite, which performs both visual and functional testing.
@@ -120,17 +122,15 @@ In the field of mobile applications, a few studies were made using ML models to 
 \autocite{altinbasGUIElementDetection2022,chengMobileApplicationGUI2021,liWidgetCaptioningGenerating2020,selcukComparisonYOLOv5YOLOv82023,zhangDeepLearningBasedMobile2020,zhangMachineVisionbasedTesting2022}
 These studies closely resemble the upcoming research in this thesis in regards to their usage of ML model for gathering metadata about UI, but notably their software applications and user interfaces typically are written in languages and frameworks with better tooling support for performing visual automated testing.
 
-An interesting case was made with the AI-driven tool \emphasis{"Owl Eye"}\autocite{gamalOwlEyeAIDriven2023}, which can detect visual defects or inconsistencies in graphical user interface, based purely on provided screenshots. Two models, Faster-RCNN and YOLOv8, were trained on the RICO dataset, with a concluding choice on YOLOv8 due to higher accuracy and faster training time.
+An interesting case was made with the AI-driven tool \begin{em}"Owl Eye"\end{em} \autocite{gamalOwlEyeAIDriven2023}, which can detect visual defects or inconsistencies in graphical user interface, based purely on provided screenshots. Two models, Faster-RCNN and YOLOv8, were trained on the RICO dataset, with a concluding choice on YOLOv8 due to higher accuracy and faster training time.
 
 All results of the aforementioned studies hint towards an improvement through the usage of ML for visual testing and also the general improvement of quality, due to performing better than manual testing.
-\begin{comment}
-...more research state necessary ??...
-\end{comment}
+
 \newpage
 \chapter{Research questions}
 In order to properly assess the effectiveness and applicability of visual testing with ML technologies on an embedded system, a few questions need to be raised.
 
-As my thesis solely covers the employment of the YOLOv8 model, the main goal lies in comparing the trained model against the traditional testing method \emph{(i.e. combined manual and automatic testing for UI)}
+As my thesis solely covers the employment of the YOLOv8 model, the main goal lies in comparing the trained model against the traditional testing method \begin{em}(i.e. combined manual and automatic testing for UI)\end{em}
 \section{How does YOLOv8 enhance UI widget detection?}
 To answer this question, the accuracy of the model is compared against traditional method. Since it can be assumed, that ML detection speed vs. human reverse engineering of UI element coordinates is an unfair comparison, the answer will focus on the precision the model can provide.
 Since the reliability of the model is critical, inherited from the critical functionality the UI of the security system performs, an extensive analysis of the model accuracy is required.
@@ -159,7 +159,7 @@ The model will also need to handle the case of varying user interfaces in an ong
 \section{Which limitations of current testing methods does YOLOv8 address?}
 The limitations of the current methods reside in the man hours involved for manual and automatic testing, the involved error rates with that method and the bad scalability due to required specification changes.
 The man hours for the development of the past and the ongoing UI testing will be taken into account, alongside an regression analysis to determine the improvements with the model usage.
-
+\newpage
 \chapter{Method}
 % Method
 \section{Outline}
@@ -198,25 +198,58 @@ The man hours for the development of the past and the ongoing UI testing will be
     \item Conclusion
     \item Bibliography
 \end{enumerate}
-
-\section{Methodology}
-\chapter{Data Preparation}
+\newpage
+\chapter{Methodology}
+\section{Data Preparation}
 The first stage involves synthesizing a dataset for training the machine learning model. This dataset will be created using two custom tools: a UI Generator and a UI Randomizer. The UI Generator, developed in C/C++, will produce images of user interfaces using a variety of widgets from the LVGL library, which is commonly employed in embedded systems for UI development. These images, along with their corresponding labels, serve as the initial training data for the YOLOv8 object detection model.
 
 The UI Randomizer, a Python script, will automate the generation of a large number of varied UI layouts by invoking the UI Generator with different parameters. This ensures a diverse training set, which is crucial for the robustness of the machine learning model. The randomizer will organize the generated data into training, validation, and testing sets, and preprocess the labels to convert widget names into class IDs and normalize pixel values for the object detection task.
 
-\chapter{Model Training and Fine-Tuning}
+\section{Model Training and Fine-Tuning}
 Once the dataset is prepared, the YOLOv8 model will be trained on the synthesized data. Training will be carried out until the model achieves a satisfactory level of accuracy on the validation set. After the base model training, fine-tuning will be conducted using proprietary UI screenshots from actual embedded systems, ensuring the model adapts to real-world examples similar to those it will encounter in production.
 
-\chapter{Integration into Testing Environment}
+\section{Integration into Testing Environment}
 The trained model will then be encapsulated within a Docker container, creating a portable and isolated UI-Detector. This detector will be integrated into a container host environment, which will manage the execution of the UI-Detector and facilitate interaction with the embedded system under test. The container will be responsible for predicting UI elements and providing metadata essential for the test automation.
 
-\chapter{Automation of Testing Process}
+\section{Automation of Testing Process}
 The final stage involves the actual automation of the testing process. This includes acquiring screendumps from the embedded device, which the UI-Detector will use to perform object detection. The identified UI elements and their metadata will be used in automated test cases, and the UI interaction routines will interact with the embedded Device Under Test (DUT) based on the test cases. The entire process aims to minimize manual intervention, reduce errors in test creation, and adapt quickly to changes in UI designs.
 
 This comprehensive methodology integrates machine learning into the existing test framework, significantly enhancing the capabilities of visual regression testing in embedded systems. The use of Docker ensures a consistent and replicable testing environment, while the focus on automation aims to streamline the entire testing process, from data generation to test execution.
 
 % Methodology
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
+\clearpage                                                       % Beginne neue Seite
+
+%\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
+\printbib{Literature}                                             % Literaturverzeichnis FH-Zitier-Standard
+\clearpage
+
+\listoffigures                                                   % Abbildungsverzeichnis
+\clearpage
+
+\listoftables                                                    % Tabellenverzeichnis
+\clearpage
+
+\listoflistings                                                  % Quellcodeverzeichnis
+\clearpage
+
+\phantomsection
+\addcontentsline{toc}{chapter}{\listacroname}
+\chapter*{\listacroname}
+\begin{acronym}[XXXXX]
+    \acro{YOLO}[YOLO]{You only live once}
+    \acro{UI}[UI]{User interface}
+    \acro{LVGL}[LVGL]{Light and versatile graphics library}
+    \acro{SiL}[SiL]{System-in-the-loop}
+    \acro{SUT}[SUT]{System-under-test}
+    \acro{DUT}[DUT]{Device-under-test}
+\end{acronym}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
+\clearpage
+\appendix
+\chapter{Anhang A}
+\clearpage
+\chapter{Anhang B}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Examples from the LaTex Template
 \begin{comment}
@@ -296,27 +329,27 @@ Literaturverweise sollten automatisch verwaltet werden, vor allem, wenn es viele
 Hier wird etwas Quellcode dargestellt:
 \begin{listing}[htbp]
     \begin{minted}[
-    frame=single,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=white,
-    fontsize=\footnotesize,
-    linenos
-    ]{c}
-#include <iostream>
-
-void SayHello(void)
-{
-    // Kommentar
-    cout << "Hello World!" << endl;
-}
-
-int main(int argc, char **argv)
-{
-    SayHello();
-    return 0;
-}
-\end{minted}
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        linenos
+        ]{c}
+    #include <iostream>
+    
+    void SayHello(void)
+    {
+        // Kommentar
+        cout << "Hello World!" << endl;
+    }
+    
+    int main(int argc, char **argv)
+    {
+        SayHello();
+        return 0;
+    }
+    \end{minted}
     \caption{Hello-World}
 \end{listing}
 
@@ -345,35 +378,5 @@ Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.over
 %
 \end{comment}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
-\clearpage                                                       % Beginne neue Seite
-
-\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
-%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
-\clearpage
-
-\listoffigures                                                   % Abbildungsverzeichnis
-\clearpage
-
-\listoftables                                                    % Tabellenverzeichnis
-\clearpage
-
-\listoflistings                                                  % Quellcodeverzeichnis
-\clearpage
-
-\phantomsection
-\addcontentsline{toc}{chapter}{\listacroname}
-\chapter*{\listacroname}
-\begin{acronym}[XXXXX]
-    \acro{YOLO}[YOLO]{You only live once}
-    \acro{UI}[UI]{User interface}
-    \acro{LVGL}[LVGL]{Light and versatile graphics library}
-\end{acronym}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
-\clearpage
-\appendix
-\chapter{Anhang A}
-\clearpage
-\chapter{Anhang B}
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts
