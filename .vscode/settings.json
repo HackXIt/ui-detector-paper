@@ -11,7 +11,6 @@
                 "-interaction=nonstopmode",
                 "-file-line-error",
                 "-shell-escape",
-                "-pdf",
                 "-output-directory=%OUTDIR%",
                 "%DOC%"
             ]
@@ -49,6 +48,6 @@
         "*.fdb_latexmk",
         // add other file extensions as needed
     ],
+    "editor.wordWrap": "on"
     // ... other tools ...
-],
 }
