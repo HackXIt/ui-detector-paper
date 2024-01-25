@@ -14,6 +14,17 @@
                             % merken, dass Sie zusätzliche Funktionen
                             % benötigen ist hier ein guter Platz um
                             % weitere Packages zu laden
+\usepackage{svg}
+\usepackage{fancyhdr}
+% Define a new page style
+\fancypagestyle{ExperienceFromAuthor}{
+  \fancyhf{} % Clear header and footer
+  \renewcommand{\headrulewidth}{0pt} % No header rule
+  \renewcommand{\footrulewidth}{0.4pt} % Thin footer rule
+  \fancyfoot[L]{\thepage} % Page number on the left of the footer
+  \fancyfoot[R]{\footnotesize The problem description is written from the personal expierence of the author, who is employed at Schrack Seconet AG, with 7 years of experience in manual and automation testing at the company.} % Footnote text on the right
+}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
 \usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
 %\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
@@ -48,7 +59,9 @@ This exposé focuses on manual and automatic testing methods and highlights the 
 In the upcoming thesis, I plan to leverage existing machine learning models for object detection and bring these beneficial factors into the world of embedded systems, where the employment of these technologies has been lacking for UI testing. Through training of an ML model on the specifics of a widely used graphics library in microcontrollers and integration in a test automation solution for a distributed embedded system, it will be attempted to show that testing in those fields can benefit from state-of-the-art object detection. As an exemplary case, the user interface of a nurse call system will be tested using the implemented methods of the thesis and compared against the previous combined approach of manual and automatic testing.
 
 In the following chapter, the existing problems in testing user interfaces at Schrack Seconet are described.
+
 \newpage
+\pagestyle{ExperienceFromAuthor}
 \chapter{Problem description}
 % ... user interfaces ... ?
 Performing manual system testing on embedded devices, particularly in security systems like the Schrack Seconet nurse call system, is a labor-intensive process. It involves writing specifications and maintaining test cases, as well as executing these tests manually on the system. Specifically, the maintenance of these formally written test cases becomes increasingly complex and time-consuming with the product's time on the market. This problem is exaggarated in hardware products that inherently are part of the building infrastructure, where the general assumption is a long-time usage of the product itself. In the example of a nurse call system, a typical lifespan of devices on site can easily exceed 5 years, with the product itself being on the market for 10 years or more (as it is also the case for the Visocall IP system).
@@ -61,8 +74,10 @@ In the last two decades, this problem was mitigated with the usage of test autom
 % reference highlighting the benefits of test automation compared to manual testing
 However, when it comes to user interfaces, it is still a common approach to perform manual testing, as it is difficult to automate in the field of embedded systems.
 % reference showing the difficulties of test automation in embedded systems
+
 In mobile devices and web frontends, it is shown that test automation can be applied to improve the quality of the product, but this largely originates from the increase in frameworks and tools available to the test automation developer.
 % reference showing the usage of test automation in mobile devices and web frontends
+
 But legacy systems, which typically rely on hardware with limited performance capabilities, may lack the means to provide the TA developer with the necessary UI metadata to assess the visual aspects and functionality of the product. Such metadata includes the position, size, visual appearance and function of the user interface elements. In embedded systems, a firmware developer would have to implement functionality to expose this metadata to the test automation developer, increasing development time, complexity and cost.
 
 One approach in system-in-the-loop systems testing relies on simulation of peripherals and hardware interfaces of the embedded system. In such systems the user interface will be rendered on a general purpose computer. The required metadata for testing can then be obtained from the simulation, which then is easier to implement than exposing the metadata from the actual hardware.
@@ -106,6 +121,7 @@ The visual aspect of the UI plays an important in nurse call systems, since it i
 Making use of the aforementioned screen dumps to assess these visual aspects is not a valid approach, since it does not account for display driver issues that may occur through either hardware defects or transmission errors from the device controller to the display controller.
 
 A solution, which is capable of dealing with the dynamic nature of user interfaces, visual verification and future UI development changes is therefor highly sought after. Making use of computer vision and machine learning in embedded systems testing is assumed to be a promising approach for the purpose of reducing the cost and time involved in manual and automatic testing of these user interfaces.
+\newpage
 \chapter{Research state}
 % .. TBD ...
 % note list of relevant papers here (will need to be added to the bib reference)
@@ -114,21 +130,20 @@ The topic of the thesis is specific to applying an ML based object detection mod
 
 Existing research on UI testing from test targets of other fields such as software, mobile devices and web can be used to extract methodologies, comparative analysis and results, to draw conclusions about the proposed quality improvement when using an ML model approach for testing. The main differentiation in the thesis is the existing constraints when testing embedded system, inherited largely from the difficulty of making visual information accessible for test automation purposes when working with embedded devices.
 
-In an article, \autocite{linImprovingAccuracyAutomated2014} the method of using record-and-play is described, which uses the display data sent to a host PC and analyzes events performed by a manual tester to record test cases. In another step, the recorded events are played back to the device. However, this approach is not very easy to perform on distributed embedded systems, with various displays involved. It also comes with a performance challenge and the cost of proprietary technologies used.
+In an article, \autocite{linImprovingAccuracyAutomated2014} the method of using record-and-play is described, with the goal of improving test accuracy. It uses the display data sent to a host PC and analyzes events performed by a manual tester to record test cases. In another step, the recorded events are played back to the device. However, this approach is not very easy to perform on distributed embedded systems, with various displays involved. It also comes with a performance challenge and the cost of proprietary technologies used.
 
-Since my thesis involves the transitioning from a manual system test suite for the embedded UI, to an automated one with ML capabilities, a study in the software development field \autocite{alegrothTransitioningManualSystem2013} was found, which detailed the results and effects of such a transition. Their findings confirm that an automated visual testing approach can be beneficial and bring improvement.
-An additional later study on VGT by the same authors \autocite{alegrothVisualGUITesting2015} analyzed the challenges, problems and limitations (CPL) when it comes to transitioning to visual UI testing. In their study, they discovered 58 CPLs, categorized into 26 types. A more thorough investigation of the study is still due in context of applicability on the to be tested embedded system, but it is anticipated that the analytic methodology of this study is also applicable in this thesis.
-\begin{comment}
-In my thesis, a smaller subset of these metrics will be documented throughout the development process of the test cases. The basis for the analysis of the VGT approach will be existing manual visual test cases and automated functional UI test cases using the reverse-engineering approach for UI elements. This combined test set will be compared against the newly created automated test suite, which performs both visual and functional testing.
-\end{comment}
+Since the thesis involves the transitioning from a manual system test suite for the embedded UI, to an automated one with ML capabilities, a study in the software development field \autocite{alegrothTransitioningManualSystem2013} was found, which detailed the results and effects of such a transition. Their findings confirm that an automated visual testing approach can be beneficial and bring improvement.
+An additional later study on VGT by the same authors \autocite{alegrothVisualGUITesting2015} analyzed the challenges, problems and limitations (CPL) when it comes to transitioning to visual UI testing. In their study, they discovered 58 CPLs, categorized into 26 types. A more thorough investigation of the study is still due in context of applicability on the embedded system to be tested, but it is anticipated that the analytic methodology of this study is applicable in the thesis.
 
 In the field of mobile applications, a few studies were made using ML models to perform testing or create metadata of the graphical model of the UI. (i.e. element types, hierarchical structure, detection and recognition, state)
 \autocite{altinbasGUIElementDetection2022,chengMobileApplicationGUI2021,liWidgetCaptioningGenerating2020,selcukComparisonYOLOv5YOLOv82023,zhangDeepLearningBasedMobile2020,zhangMachineVisionbasedTesting2022, cavsakGUIComponentDetection} A common dataset used in these studies is the RICO dataset. \autocite{dekaRicoMobileApp2017}
-These studies closely resemble the upcoming research in this thesis in regard to their usage of ML model for gathering metadata about UI, but notably their software applications and user interfaces typically are written in languages and frameworks with better tooling support for performing visual automated testing.
+These studies share similarities of the upcoming research in regard to their usage of an ML model for gathering metadata about UI. Notably their software applications and user interfaces typically are written in languages and frameworks with better tooling support for performing visual automated testing.
 
 An interesting case was made with the AI-driven tool \begin{em}"Owl Eye"\end{em} \autocite{gamalOwlEyeAIDriven2023}, which can detect visual defects or inconsistencies in graphical user interface, based purely on provided screenshots. Two models, Faster-RCNN and YOLOv8, were trained on the RICO dataset, with a concluding choice on YOLOv8 due to higher accuracy and faster training time.
 
-All results of the aforementioned studies hint towards an improvement through the usage of ML for visual testing and also the general improvement of quality, due to performing better than manual testing. This serves as a starting point 
+These aforementioned studies hint towards an improvement through the usage of ML for visual testing and also the general improvement of quality, due to performing better than manual testing.
+
+In regards to the testing framework used, it is already shown in that Robot Framework can improve the quality of the testing process. \autocite{walkerSoftwareTestAutomation2020}
 
 \newpage
 \chapter{Research questions}
@@ -166,18 +181,12 @@ The man-hours for the development of the past and the ongoing UI testing will be
 \newpage
 % Method
 \chapter{Thesis outline}
-\begin{center}
-    \Large{\textbf{Research Outline}}
-\end{center}
-
-\vspace{1cm} % Add some space before the outline starts
-
 % Start of the custom outline environment
 \begin{enumerate}
     \item Introduction
     \item Existing literature
     \item Problem Statement
-           \begin{itemize}
+          \begin{itemize}
               \item Problem context at Schrack Seconet
           \end{itemize}
     \item Research Objectives
@@ -187,6 +196,13 @@ The man-hours for the development of the past and the ongoing UI testing will be
               \item What challenges does YOLOv8 overcome in automated embedded UI testing?
               \item How effectively does YOLOv8 detect and classify widgets in various UI layouts?
               \item Which limitations of current testing methods does YOLOv8 address?
+          \end{itemize}
+    \item Tools and Technologies
+          \begin{itemize}
+              \item YOLOv8
+              \item LVGL
+              \item Robot Framework
+              \item Docker
           \end{itemize}
     \item Methodology
           \begin{itemize}
@@ -198,18 +214,44 @@ The man-hours for the development of the past and the ongoing UI testing will be
           \begin{itemize}
               \item Development Environment
           \end{itemize}
-    \item Significance of the Study
     \item Research Constraints and Limitations
-    \item Timeline
     \item Conclusion
     \item Bibliography
 \end{enumerate}
 \newpage
 \chapter{Methodology}
-\section{Data Preparation}
-The first stage involves synthesizing a dataset for training the machine learning model. This dataset will be created using two custom tools: a UI Generator and a UI Randomizer. The UI Generator, developed in C/C++, will produce images of user interfaces using a variety of widgets from the LVGL library, which is commonly employed in embedded systems for UI development. These images, along with their corresponding labels, serve as the initial training data for the YOLOv8 object detection model.
+In the thesis, a multi-stage approach is proposed as showcased in figure \ref{Fig1}.
 
+The first stage involves synthesizing a dataset for training the machine learning model. This dataset will be created using two custom tools: a UI Generator and a UI Randomizer. The randomizer calls the generator to construct a dataset of UI screenshots with varying layouts and widget types.
+
+A base model will then be trained on this varied and randomized UI dataset in the second stage, using the YOLOv8 model \autocite{jocherUltralyticsYOLO2023}. The model will learn the characteristics for detecting LVGl objects.
+
+In the third stage, the model will be fine-tuned using proprietary UI screenshots from the actual embedded system under test. A docker image from this stage will be created to be deployed to a container host.
+
+In the last stage, the Robot Framework \autocite{RobotFramework} will fetch a screen dump from the DUT and pass it to the UI detector container. Object detection will be performed and the returned metadata will be provided to a test case as metadata for UI interaction. When the test case starts, it will use the metadata to interact with the DUT.
+\begin{figure}[!htbp]
+    \centering
+    \includesvg[height=0.4\textheight,width=\textwidth,keepaspectratio]{PICs/Framework}
+    \caption{Proposed multi-stage approach.}\label{Fig1}
+\end{figure}
+\newpage
+\section{Data Preparation}
+The first stage involves synthesizing a dataset for training the machine learning model. This dataset will be created using two custom tools: a UI Generator [Fig\ref{Fig2}] and a UI Randomizer [Fig\ref{Fig3}]. The UI Generator, developed in C/C++, will produce images of user interfaces using a variety of widgets from the LVGL library, which is commonly employed in embedded systems for UI development. These generated images, along with their corresponding labels, serve as the initial training data for the YOLOv8 object detection model.
+
+\begin{figure}[!htbp]
+    \centering
+    \includesvg[width=\textwidth,keepaspectratio]{PICs/project-architecture-LVGL UI Generator}
+    \caption{Diagram of the LVGL UI Generator binary.}\label{Fig2}
+\end{figure}
+\newpage
 The UI Randomizer, a Python script, will automate the generation of a large number of varied UI layouts by invoking the UI Generator with different parameters. This ensures a diverse training set, which is crucial for the robustness of the machine learning model. The randomizer will organize the generated data into training, validation, and testing sets, and preprocess the labels to convert widget names into class IDs and normalize pixel values for the object detection task.
+
+\begin{figure}[!htbp]
+    \centering
+    \includesvg[width=\textwidth,keepaspectratio]{PICs/project-architecture-UI Randomizer}
+    \caption{Diagram of the UI Randomizer script.}\label{Fig3}
+\end{figure}
+
 
 \section{Model Training and Fine-Tuning}
 Once the dataset is prepared, the YOLOv8 model will be trained on the synthesized data. Training will be carried out until the model achieves a satisfactory level of accuracy on the validation set. After the base model training, fine-tuning will be conducted using proprietary UI screenshots from actual embedded systems, ensuring the model adapts to real-world examples similar to those it will encounter in production.
@@ -227,10 +269,10 @@ This comprehensive methodology integrates machine learning into the existing tes
 \clearpage                                                       % Beginne neue Seite
 
 %\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
-\printbib{Literature}                                             % Literaturverzeichnis FH-Zitier-Standard
+\printbib                                             % Literaturverzeichnis FH-Zitier-Standard
 \clearpage
 
-%\listoffigures                                                   % Abbildungsverzeichnis
+\listoffigures                                                   % Abbildungsverzeichnis
 \clearpage
 
 %\listoftables                                                    % Tabellenverzeichnis
@@ -243,13 +285,14 @@ This comprehensive methodology integrates machine learning into the existing tes
 \addcontentsline{toc}{chapter}{\listacroname}
 \chapter*{\listacroname}
 \begin{acronym}[XXXXX]
-    \acro{YOLO}[YOLO]{You only live once}
-    \acro{UI}[UI]{User interface}
+    \acro{CPL}[CPL]{Challenges, problemsand limitations}
+    \acro{DUT}[DUT]{Device-under-test}
     \acro{LVGL}[LVGL]{Light and versatile graphics library}
     \acro{SiL}[SiL]{System-in-the-loop}
     \acro{SUT}[SUT]{System-under-test}
-    \acro{DUT}[DUT]{Device-under-test}
-    \acro{CPL}[CPL]{Challenges, problemsand limitations}
+    \acro{TA}[TA]{Test automation}
+    \acro{UI}[UI]{User interface}
+    \acro{YOLO}[YOLO]{You only live once}
 \end{acronym}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
 \clearpage
