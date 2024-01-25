@@ -1,6 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
 %\documentclass[Master,BMR,english]{BASE/twbook} 
-\documentclass[Proposal,BIC,english,fhCitStyle,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
+\documentclass[Proposal,BIC,english,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
 \usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
 \usepackage[T1]{fontenc}    % Zeichen-Enkodierung
@@ -110,6 +110,8 @@ A solution, which is capable of dealing with the dynamic nature of user interfac
 % this section needs to highlight existing research in the field 
 The topic of the thesis is specific to applying a ML based object detection model to visual testing, commonly known as VGT, on devices of a distributed embedded systems. A direct comparisons in that regard has not been found at the time of writing. But the comprehensive survey on embedded systems testing \autocite{garousiTestingEmbeddedSoftware2018} serves as a good start for systematic approaches.
 
+In an article \autocite{linImprovingAccuracyAutomated2014} the method of using record-and-play is described, which uses the display data sent to a host PC and analyzes events performed by a manual tester to record test cases. In another step, the recorded events are played back to the device. However, this approach is not very easy to perform on distributed embedded systems, with various displays involved.
+
 Existing research on UI testing from test targets of other fields such as software, mobile devices and web can be used to extract methodologies, comparative analysis and results, to draw conclusions about the proposed quality improvement when using a ML model approach for testing. The main differentiation in the thesis is the existing constraints when testing embedded system, inherited largely from the difficulty of making visual information accessible for test automation purposes when working with embedded devices.
 
 Since my thesis involves the transitioning from a manual system test suite for the embedded UI, to an automated one with ML capabilities, a study in the software development field \autocite{alegrothTransitioningManualSystem2013} was found, which detailed the results and effects of such a transition. Their findings confirm that an automated visual testing approach can be beneficial and bring improvement.
@@ -119,7 +121,7 @@ In my thesis, a smaller subset of these metrics will be documented throughout th
 \end{comment}
 
 In the field of mobile applications, a few studies were made using ML models to perform testing or create metadata of the graphical model of the UI. (i.e. element types, hierarchical structure, detection and recognition, state)
-\autocite{altinbasGUIElementDetection2022,chengMobileApplicationGUI2021,liWidgetCaptioningGenerating2020,selcukComparisonYOLOv5YOLOv82023,zhangDeepLearningBasedMobile2020,zhangMachineVisionbasedTesting2022}
+\autocite{altinbasGUIElementDetection2022,chengMobileApplicationGUI2021,liWidgetCaptioningGenerating2020,selcukComparisonYOLOv5YOLOv82023,zhangDeepLearningBasedMobile2020,zhangMachineVisionbasedTesting2022, cavsakGUIComponentDetection} A common dataset used in these studies is the RICO dataset. \autocite{dekaRicoMobileApp2017}
 These studies closely resemble the upcoming research in this thesis in regards to their usage of ML model for gathering metadata about UI, but notably their software applications and user interfaces typically are written in languages and frameworks with better tooling support for performing visual automated testing.
 
 An interesting case was made with the AI-driven tool \begin{em}"Owl Eye"\end{em} \autocite{gamalOwlEyeAIDriven2023}, which can detect visual defects or inconsistencies in graphical user interface, based purely on provided screenshots. Two models, Faster-RCNN and YOLOv8, were trained on the RICO dataset, with a concluding choice on YOLOv8 due to higher accuracy and faster training time.
@@ -224,13 +226,13 @@ This comprehensive methodology integrates machine learning into the existing tes
 \printbib{Literature}                                             % Literaturverzeichnis FH-Zitier-Standard
 \clearpage
 
-\listoffigures                                                   % Abbildungsverzeichnis
+%\listoffigures                                                   % Abbildungsverzeichnis
 \clearpage
 
-\listoftables                                                    % Tabellenverzeichnis
+%\listoftables                                                    % Tabellenverzeichnis
 \clearpage
 
-\listoflistings                                                  % Quellcodeverzeichnis
+%\listoflistings                                                  % Quellcodeverzeichnis
 \clearpage
 
 \phantomsection
@@ -243,6 +245,7 @@ This comprehensive methodology integrates machine learning into the existing tes
     \acro{SiL}[SiL]{System-in-the-loop}
     \acro{SUT}[SUT]{System-under-test}
     \acro{DUT}[DUT]{Device-under-test}
+    \acro{CPL}[CPL]{Challenges, problemsand limitations}
 \end{acronym}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
 \clearpage
