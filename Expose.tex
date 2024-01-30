@@ -202,7 +202,7 @@ In the thesis, a multi-stage approach is proposed as showcased in Fig. \ref{Fig1
 
 The first stage involves synthesizing a dataset for training the machine learning model. This dataset will be created using two custom tools: a UI Generator and a UI Randomizer. The randomizer calls the generator to construct a dataset of UI screenshots with varying layouts and widget types.
 
-A base model will then be trained on this varied and randomized UI dataset in the second stage, using the YOLOv8 model \autocite{jocherUltralyticsYOLO2023}. The model will learn the characteristics for detecting LVGl objects.
+A base model will then be trained on this varied and randomized UI dataset in the second stage, using the YOLOv8 model \autocite{Jocher_Ultralytics_YOLO_2023}. The model will learn the characteristics for detecting LVGl objects.
 
 In the third stage, the model will be fine-tuned using proprietary UI screenshots from the actual embedded system under test. A docker image from this stage will be created to be deployed to a container host.
 
