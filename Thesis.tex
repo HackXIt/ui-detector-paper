@@ -19,7 +19,7 @@
 %\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
 \addbibresource{Literatur.bib}                              % Literatur-File definieren
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
-\title{Precision at Pixel-Level:\\YOLOv8 vs. Conventional UI Testing}
+\title{Precision at Pixel-Level:\\\acl{yoloAlt} doing UI test automation}
 
 \author{Nikolaus Rieder}
 \studentnumber{2010258028}
@@ -37,11 +37,17 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Danksagung/Kurzfassung/Schlagworte
 % Abstract
 \outline{
-Developing and executing test suites on embedded devices with a graphical user interface can be a time-consuming and exhaustive process. This research investigates wheter the implementation of a machine learning model can improve the speed and accuracy of widget detection on such test targets, when compared to manual and automated test development methods. The proposed solution attempts to reduce the lengthy process of identifying and locating widgets by training a YOLOv8 based model specifically on the LVGL framework and integrating the information predicted by the model into Robot Framework testcases. By leveraging the LVGL simulator for PC, a varied and randomized dataset is synthesized containing screenshots of user interfaces with realistic design aspects. This papers solution makes use of a design file system to control the random behaviour of the implemented UI generator in realistically aligned layouts. When determining coordinates of widgets either manually or automatically, the performed test development for embedded systems is shown to be an error-prone process with a high maintenance aspect and scaling problems. It is anticipated, that the implementation of a ML model will address these challenges and can outperform the existing testing methodologies in speed and accuracy. Through literature findings in [a] and [b], comparisons to traditional testing methodologies, such as [x] and [y], are made. This knowledge will be deepened when benchmarked against a fine-tuned version of the model, that will be trained on manually labeled image data from proprietary user interface designs provided by the involved company. In conclusion, the integration into a fully automated test pipeline via the usage of the Robot Framework will provide evidence of the effectiveness of this fine-tuned model when analatically compared against the manual and automatic testcases developed in the process.
-%for the purpose of performing test automation which targets such devices. 
-It makes use of the light and versatile graphics library (LVGL) to simulate user interfaces and synthesize screenshot datasets. By showcasing the challenges in automated UI testing on embedded systems, the paper will attempt to reduce the frequency of error types from manual and automated test procedures. Through findings in existing literature, it will draw a comparison of testing methodologies involved, in hopes that the implementation will improve accuracy and speed of widget detection. The model will be integrated into the Robot Framework by providing metadata for executed test routines. Through comparative analysis, it will be shown how effectively a machine learning model based on YOLOv8 can detect and classify widgets in varied and randomized user interface layouts. The solution aims to address the limitations of traditional manual and automatic testing methods that can be overcome through this implementation.
+Developing and executing test suites on embedded devices with a \ac{gui} can be a time-consuming and exhaustive process. Nevertheless, it is a necessary task in interfaces of critical infrastructure, like \ac{fas} or \ac{hcs} developed at Schrack Seconet. This research analyzes the viability of using machine learning for identifying and detecting \ac{ui} widgets based purely on screenshot data. The analysis is written from the perspective of \ac{ta} performed on critical systems like the aforementioned. The focus is on high performing results due to the qualitative requirements in \ac{ui} test automation of such systems, where upcoming problems during development are considered potentially critical if not detected.
+\\
+During paper development, a \ac{yolo} model was trained on randomly synthesized datasets of \ac{ui} screenshots. The datasets were generated with the \ac{lvgl}, a common and popular library in embedded systems.
+During development of the datasets and model training processes, key problem factors are identified and potential mitigations addressed. The findings showcase these points in the context of a nurse call system, where reliability of the user interface plays a critical role and margin for error is non-existent.
+\\
+The project follows a Design Science research approach, in which a \ac{ui} generator for \ac{lvgl} was created, that is capable of generating datasets of randomly chosen and placed widgets on a screen, as well as the generation of realistic looking designs by using a system based on a \ac{json} schema. In order to create larger datasets, a \ac{llm} was used to design multiple \ac{ui}s from a list of pre-defined contexts and themes.
+\\\\
+This research aims to reduce time spent in test development and improve test coverage of varied \ac{ui}s in devices of critical systems, while aiding human developers in manual and automated testing.
+\\
 }
-\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget classification, automated testing, comparative study}
+\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget classification, automated testing}
 % Acknowledgements
 \acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience were unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up to this point.}
 \setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis 
@@ -51,6 +57,7 @@ It makes use of the light and versatile graphics library (LVGL) to simulate user
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
 \maketitle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
+\chapter{Introduction}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -201,11 +208,49 @@ Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.over
 \phantomsection
 \addcontentsline{toc}{chapter}{\listacroname}
 \chapter*{\listacroname}
-\begin{acronym}[XXXXX]
-    \acro{YOLO}[YOLO]{You only live once}
-    \acro{UI}[UI]{User interface}
-    \acro{LVGL}[LVGL]{Light and versatile graphics library}
+\begin{acronym}[YOLO]
+    \acro{yoloAlt}[YOLO]{You only live once}
+    \acro{yolo}[YOLO]{You only look once}
+    \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics}
+    \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
+    \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
 \end{acronym}
+\begin{acronym}[UI]
+    \acro{ui}[UI]{user interface}
+    \acro{gui}[GUI]{graphical user interface}
+\end{acronym}
+\begin{acronym}[TEST]
+    \acro{ta}[TA]{test automation}
+    \acro{sut}[SUT]{system under test}
+    \acro{dut}[DUT]{device under test}
+    \acro{hil}[HiL]{Hardware-in-the-Loop}
+    \acro{sil}[SiL]{Software-in-the-Loop}
+    \acro{pil}[PiL]{Processor-in-the-Loop}
+    \acro{mil}[MiL]{Model-in-the-Loop}
+\end{acronym}
+\begin{acronym}[TECH]
+    \acro{json}[JSON]{JavaScript Object Notation}
+\end{acronym}
+\begin{acronym}[EMBSYS]
+    \acro{rtos}[RTOS]{Real-Time Operating System}
+    \acro{led}[LED]{Light Emitting Diode}
+    \acro{lcd}[LCD]{Liquid Crystal Display}
+    \acro{pwm}[PWM]{Pulse Width Modulator}
+    \acro{iso}[ISO]{International Standards Organization}
+    \acro{lvgl}[LVGL]{Light and versatile graphics library}
+    \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
+\end{acronym}
+\begin{acronym}[SSGNET]
+    \acro{fas}[FAS]{fire alarm system}
+    \acro{hcs}[HCS]{health care system}
+\end{acronym}
+\begin{acronym}[MACHINELEARNING]
+    \acro{ml}[ML]{machine learning}
+    \acro{mlops}[]{machine learning operations}
+    \acro{llm}[LLM]{large language model}
+    \acro{gpt}[GPT]{generative pre-trained transformer}
+\end{acronym}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
 \clearpage
 \appendix
