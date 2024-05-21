@@ -1,23 +1,27 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
-%\documentclass[Master,BMR,english]{BASE/twbook} 
-\documentclass[Bachelor,BIC,english,fhCitStyle,IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden 
+%\documentclass[Master,BMR,english]{BASE/twbook}
+\documentclass[Bachelor, BIC, english, fhCitStyle, IEEE]{
+    BASE/twbook
+} % FH definierte Zitierstandards verwenden
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
 \usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
-\usepackage[T1]{fontenc}    % Zeichen-Enkodierung
-\usepackage{blindtext}      % Platzhaltertexte
-\usepackage{minted}         % Darstellung von Code
-\usepackage{comment}        % Auskommentieren von ganzen Passagen
+\usepackage[T1]{fontenc} % Zeichen-Enkodierung
+\usepackage{blindtext} % Platzhaltertexte
+\usepackage{minted} % Darstellung von Code
+\usepackage{comment} % Auskommentieren von ganzen Passagen
 \usepackage{csquotes}
-\usepackage{algorithm}      % Umgebung f Algorithmen
+\usepackage{algorithm} % Umgebung f Algorithmen
 \usepackage[noend]{algpseudocode}
-                            % Wenn Sie während Ihrer Arbeit
-                            % merken, dass Sie zusätzliche Funktionen
-                            % benötigen ist hier ein guter Platz um
-                            % weitere Packages zu laden
+% Wenn Sie während Ihrer Arbeit
+% merken, dass Sie zusätzliche Funktionen
+% benötigen ist hier ein guter Platz um
+% weitere Packages zu laden
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
-\usepackage[backend=biber, style=ieee]{biblatex}            % LaTeX definierter IEEE- Standard
+\usepackage[backend=biber, style=ieee]{
+    biblatex
+} % LaTeX definierter IEEE- Standard
 %\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
-\addbibresource{Literatur.bib}                              % Literatur-File definieren
+\addbibresource{Literatur.bib} % Literatur-File definieren
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
 \title{Precision at Pixel-Level:\\\acl{yoloAlt} doing UI test automation}
 
@@ -36,29 +40,20 @@
 \place{Wien}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Danksagung/Kurzfassung/Schlagworte
 % Abstract
-\outline{
-Developing and executing test suites on embedded devices with a \ac{gui} can be a time-consuming and exhaustive process. Nevertheless, it is a necessary task in interfaces of critical infrastructure, like \ac{fas} or \ac{hcs} developed at Schrack Seconet. This research analyzes the viability of using machine learning for identifying and detecting \ac{ui} widgets based purely on screenshot data. The analysis is written from the perspective of \ac{ta} performed on critical systems like the aforementioned. The focus is on high performing results due to the qualitative requirements in \ac{ui} test automation of such systems, where upcoming problems during development are considered potentially critical if not detected.
-\\
-During paper development, a \ac{yolo} model was trained on randomly synthesized datasets of \ac{ui} screenshots. The datasets were generated with the \ac{lvgl}, a common and popular library in embedded systems.
-During development of the datasets and model training processes, key problem factors are identified and potential mitigations addressed. The findings showcase these points in the context of a nurse call system, where reliability of the user interface plays a critical role and margin for error is non-existent.
-\\
-The project follows a Design Science research approach, in which a \ac{ui} generator for \ac{lvgl} was created, that is capable of generating datasets of randomly chosen and placed widgets on a screen, as well as the generation of realistic looking designs by using a system based on a \ac{json} schema. In order to create larger datasets, a \ac{llm} was used to design multiple \ac{ui}s from a list of pre-defined contexts and themes.
-\\\\
-This research aims to reduce time spent in test development and improve test coverage of varied \ac{ui}s in devices of critical systems, while aiding human developers in manual and automated testing.
-\\
-}
-\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget classification, automated testing}
+\outline{ Developing and executing test suites on embedded devices with a \ac{gui} can be a time-consuming and exhaustive process. Nevertheless, it is a necessary task in interfaces of critical infrastructure, like \ac{fas} or \ac{hcs} developed at Schrack Seconet. This research analyzes the viability of using machine learning for identifying and detecting \ac{ui} widgets based purely on screenshot data. The analysis is written from the perspective of \ac{ta} performed on critical systems like the aforementioned. The focus is on high performing results due to the qualitative requirements in \ac{ui} test automation of such systems, where upcoming problems during development are considered potentially critical if not detected. \\ During paper development, a \ac{yolo} model was trained on randomly synthesized datasets of \ac{ui} screenshots. The datasets were generated with the \ac{lvgl}, a common and popular library in embedded systems. During development of the datasets and model training processes, key problem factors are identified and potential mitigations addressed. The findings showcase these points in the context of a nurse call system, where reliability of the user interface plays a critical role and margin for error is non-existent. \\ The project follows a Design Science research approach, in which a \ac{ui} generator for \ac{lvgl} was created, that is capable of generating datasets of randomly chosen and placed widgets on a screen, as well as the generation of realistic looking designs by using a system based on a \ac{json} schema. In order to create larger datasets, a \ac{llm} was used to design multiple \ac{ui}s from a list of pre-defined contexts and themes. \\\\ This research aims to reduce time spent in test development and improve test coverage of varied \ac{ui}s in devices of critical systems, while aiding human developers in manual and automated testing. \\ }
+\keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget
+classification, automated testing}
 % Acknowledgements
 \acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience were unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up to this point.}
-\setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis 
+\setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Headers
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Dokuments
 \begin{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \maketitle
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
 \chapter{Introduction}
-
+In embedded systems it is objectively harder
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -189,73 +184,61 @@ Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.over
 \end{algorithm}
 %
 \end{comment}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
-\clearpage                                                       % Beginne neue Seite
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
+    \clearpage % Beginne neue Seite
 
-\printbib                                                        % Literaturverzeichnis LaTeX-Zitier-Standard
-%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
-\clearpage
+    \printbib % Literaturverzeichnis LaTeX-Zitier-Standard
+    %\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
+    \clearpage
 
-\listoffigures                                                   % Abbildungsverzeichnis
-\clearpage
+    \listoffigures % Abbildungsverzeichnis
+    \clearpage
 
-\listoftables                                                    % Tabellenverzeichnis
-\clearpage
+    \listoftables % Tabellenverzeichnis
+    \clearpage
 
-\listoflistings                                                  % Quellcodeverzeichnis
-\clearpage
+    \listoflistings % Quellcodeverzeichnis
+    \clearpage
 
-\phantomsection
-\addcontentsline{toc}{chapter}{\listacroname}
-\chapter*{\listacroname}
-\begin{acronym}[YOLO]
-    \acro{yoloAlt}[YOLO]{You only live once}
-    \acro{yolo}[YOLO]{You only look once}
-    \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics}
-    \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
-    \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
-\end{acronym}
-\begin{acronym}[UI]
-    \acro{ui}[UI]{user interface}
-    \acro{gui}[GUI]{graphical user interface}
-\end{acronym}
-\begin{acronym}[TEST]
-    \acro{ta}[TA]{test automation}
-    \acro{sut}[SUT]{system under test}
-    \acro{dut}[DUT]{device under test}
-    \acro{hil}[HiL]{Hardware-in-the-Loop}
-    \acro{sil}[SiL]{Software-in-the-Loop}
-    \acro{pil}[PiL]{Processor-in-the-Loop}
-    \acro{mil}[MiL]{Model-in-the-Loop}
-\end{acronym}
-\begin{acronym}[TECH]
-    \acro{json}[JSON]{JavaScript Object Notation}
-\end{acronym}
-\begin{acronym}[EMBSYS]
-    \acro{rtos}[RTOS]{Real-Time Operating System}
-    \acro{led}[LED]{Light Emitting Diode}
-    \acro{lcd}[LCD]{Liquid Crystal Display}
-    \acro{pwm}[PWM]{Pulse Width Modulator}
-    \acro{iso}[ISO]{International Standards Organization}
-    \acro{lvgl}[LVGL]{Light and versatile graphics library}
-    \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
-\end{acronym}
-\begin{acronym}[SSGNET]
-    \acro{fas}[FAS]{fire alarm system}
-    \acro{hcs}[HCS]{health care system}
-\end{acronym}
-\begin{acronym}[MACHINELEARNING]
-    \acro{ml}[ML]{machine learning}
-    \acro{mlops}[]{machine learning operations}
-    \acro{llm}[LLM]{large language model}
-    \acro{gpt}[GPT]{generative pre-trained transformer}
-\end{acronym}
+    \phantomsection
+    \addcontentsline{toc}{chapter}{\listacroname}
+    \chapter*{\listacroname}
+    \begin{acronym}
+        [YOLO] \acro{yoloAlt}[YOLO]{You only live once} \acro{yolo}[YOLO]{You Only Look Once}
+        \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics} \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
+        \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
+    \end{acronym}
+    \begin{acronym}
+        [UI] \acro{ui}[UI]{user interface} \acro{gui}[GUI]{graphical user interface}
+    \end{acronym}
+    \begin{acronym}
+        [TEST] \acro{ta}[TA]{test automation} \acro{sut}[SUT]{system under test}
+        \acro{dut}[DUT]{device under test} \acro{hil}[HiL]{Hardware-in-the-Loop}
+        \acro{sil}[SiL]{Software-in-the-Loop} \acro{pil}[PiL]{Processor-in-the-Loop}
+        \acro{mil}[MiL]{Model-in-the-Loop}
+    \end{acronym}
+    \begin{acronym}
+        [TECH] \acro{json}[JSON]{JavaScript Object Notation}
+    \end{acronym}
+    \begin{acronym}
+        [EMBSYS] \acro{rtos}[RTOS]{Real-Time Operating System} \acro{led}[LED]{Light Emitting Diode}
+        \acro{lcd}[LCD]{Liquid Crystal Display} \acro{pwm}[PWM]{Pulse Width Modulator}
+        \acro{iso}[ISO]{International Standards Organization} \acro{lvgl}[LVGL]{Light and versatile graphics library}
+        \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
+    \end{acronym}
+    \begin{acronym}
+        [SSGNET] \acro{fas}[FAS]{fire alarm system} \acro{hcs}[HCS]{health care system}
+    \end{acronym}
+    \begin{acronym}
+        [MACHINELEARNING] \acro{ml}[ML]{machine learning} \acro{mlops}[]{machine learning operations}
+        \acro{llm}[LLM]{large language model} \acro{gpt}[GPT]{generative pre-trained transformer}
+    \end{acronym}
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
-\clearpage
-\appendix
-\chapter{Anhang A}
-\clearpage
-\chapter{Anhang B}
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
+    \clearpage
+    \appendix
+    \chapter{Anhang A}
+    \clearpage
+    \chapter{Anhang B}
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts
