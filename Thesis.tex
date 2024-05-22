@@ -1,8 +1,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Klasse Festlegen
 %\documentclass[Master,BMR,english]{BASE/twbook}
-\documentclass[Bachelor, BIC, english, fhCitStyle, IEEE]{
-    BASE/twbook
-} % FH definierte Zitierstandards verwenden
+\documentclass[Bachelor, BIC, english, fhCitStyle, IEEE]{BASE/twbook} % FH definierte Zitierstandards verwenden
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Verwendete Packages
 \usepackage[utf8]{inputenc} % Zeichen-Enkodierung (evtl. Abweichungen für Apple)
 \usepackage[T1]{fontenc} % Zeichen-Enkodierung
@@ -12,16 +10,25 @@
 \usepackage{csquotes}
 \usepackage{algorithm} % Umgebung f Algorithmen
 \usepackage[noend]{algpseudocode}
+\graphicspath{ {./PICs/} }
 % Wenn Sie während Ihrer Arbeit
 % merken, dass Sie zusätzliche Funktionen
 % benötigen ist hier ein guter Platz um
 % weitere Packages zu laden
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Zitierstil zum selbst definieren
-\usepackage[backend=biber, style=ieee]{
-    biblatex
-} % LaTeX definierter IEEE- Standard
+\usepackage[backend=biber, style=ieee]{biblatex} % LaTeX definierter IEEE- Standard
 %\usepackage[backend=biber, style=authoryear]{biblatex}      % LaTeX definierter Harvard-Standard
-\addbibresource{Literatur.bib} % Literatur-File definieren
+\addbibresource{Literature.bib} % Literatur-File definieren
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Custom commands
+% Redefine \section, \subsection, \subsubsection to not add entries to the ToC
+% Define a command to temporarily disable \addcontentsline
+\newcommand{\nocontentsline}[3]{}
+% Define commands to create sections, subsections, and subsubsections without ToC entries
+\newcommand{\hidsection}[1]{\bgroup\let\addcontentsline=\nocontentsline\section{#1}\egroup}
+\newcommand{\hidsubsection}[1]{\bgroup\let\addcontentsline=\nocontentsline\subsection{#1}\egroup}
+\newcommand{\hidsubsubsection}[1]{\bgroup\let\addcontentsline=\nocontentsline\subsubsection{#1}\egroup}
+% Defines an alias for writing inline monospace font for code related things
+\def\code#1{\texttt{#1}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
 \title{Precision at Pixel-Level:\\\acl{yoloAlt} doing UI test automation}
 
@@ -46,199 +53,169 @@ classification, automated testing}
 % Acknowledgements
 \acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience were unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up to this point.}
 \setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Headers
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Dokuments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of header
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of document
 \begin{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Title page in FHTW style
 \maketitle
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Beginn des Inhalts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of content
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of Introduction
 \chapter{Introduction}
-In embedded systems it is objectively harder
+In embedded systems providing critical infrastructure, it is often mandatory to have well-established and good testing procedures. One such system is nurse call used in hospitals and health care facilities, which consists of devices that allow humans to call for help in situations ranging from mundane \textit{(e.g. requesting patient service)} to life-threatening \textit{(e.g. cardiac arrest alarm)} use-cases. These systems require interfaces for human interaction and such interfaces need to be rigorously tested, to provide feedback on system quality in early stages of development, where the potential for harm is very low. Additionally, automated testing becomes necessary, to reduce possible variation in test execution when compared to manual testing, where human-error is more prevalent than with machines repeating test cases.\\
+However, when such interfaces only consist of a touch display, it can become very challenging to automate, as it requires tools for the machine to analyze the visual image and to interact with the \ac{ui} using stimuli \textit{(e.g. simulated touch)}. The automation gets further complicated, the more inputs and outputs the machine needs to deal with in order to perform a representative human test routine. Once such test routines are established, they need to be continously maintained in order to adapt to changes to the \ac{ui}, otherwise such changes can break the test system and halt the overall development process.\\
+This research project will demonstrate a machine learning tool to aid in analyzing images to obtain metadata about the displayed \ac{ui}. The metadata consists of position and size of individual widgets, which then can be used in testing routines for precise functional interactions. By training a model that can detect and classify widgets based on screenshots, the testing routines can adapt to many \ac{ui} arrangements dynamically, which can reduce labor involved for maintenance of test repositories.\\
+Since covering all possible \ac{ui} libraries and frameworks would be tremendous in scope, the research will limit focus on \ac{lvgl} as the basis for the \ac{ui}. It begins by creating an image and annotation generator for \ac{lvgl}, since there is no available dataset for this library specifically and it also allows for targeted adjustments in dataset size, variation and balance of widget types. Furthermore, it allows for validation based on a real world example from the company where the author is employed at. The work will also be limited to a subset of available widget types, to provide a basic baseline for the viability of the tool, which may be easily extended in the future.\\
+Once dataset creation is automated, the paper will demonstrate training based on the \ac{yolo} model and evaluate performance in comparison to human methods. From a testing perspective, this paper is most concerned with the prediction accuracy of the model, since a tool that is not capable of reliable detection will only shift maintenance problems to the tool itself, rather than improving them overall.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-% Examples from the LaTex Template
-\begin{comment}
-\chapter{Erste Überschrift der Tiefe 1 (chapter)}
-Etwas Text... Hier kommen noch einige Abkürzunge vor zum Beispiel \ac{ABC},\ac{WWW} und \ac{ROFL}.
-
-\section{Erste Überschrift Tiefe 2 (section)}
-\blindtext
-
-\subsection{Erste Überschrift Tiefe 3 (subsection)}
-\blindtext
-
-\subsubsection{Erste Überschrift Tiefe 4 (subsubsection)}
-\blindtext
-
-\chapter{Zweite Überschrift der Tiefe 1 (chapter)}
-\blindtext
-
-\section{Zweite Überschrift Tiefe 2 (section)}
-\blindtext
-
-\subsection{Zweite Überschrift Tiefe 3 (subsection)}
-\blindtext
-
-\subsection{Dritte Überschrift Tiefe 3 (subsection)}
-\blindtext
-
-\subsubsection{Zweite Überschrift Tiefe 4 (subsubsection)}
-\blindtext
-
-\noindent Querverweise werden in \LaTeX{} automatisch erzeugt und verwaltet, damit sie leicht aktualisiert werden können. Hier wird zum Beispiel auf Abbildung \ref{Abb1} verwiesen.
-
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.5\linewidth]{PICs/buchruecken}
-    \caption{Beispiel für die Beschriftung eines Buchrückens.}\label{Abb1}
-\end{figure}
-\begin{figure}[!htbp]
-    \centering
-    \includegraphics[width=0.5\linewidth]{PICs/buchruecken}
-    \caption{2. Beispiel für die Beschriftung eines Buchrückens.}\label{Abb2}
-\end{figure}
-
-Und hier ist ein Verweis auf Tabelle \ref{tab1}. Das gezeigte Tabellenformat ist nur ein Beispiel. Tabellen können individuell gestaltet werden.
-
-\begin{table}[!htbp]
-    \centering
-    \caption{Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab1}
-    \begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
-        Datum      & Thema          & Raum    \\\hline
-        20.08.2008 & Graphentheorie & HS 3.13 \\
-        01.10.2008 & Biomathematik  & HS 1.05 \\\hline
-    \end{tabular}
-\end{table}
-\begin{table}[!htbp]
-    \centering
-    \caption{2. Semesterplan der Lehrveranstaltung \glqq Angewandte Mathematik\grqq.}\label{tab2}
-    \begin{tabular}{| p{0.3\linewidth} | p{0.3\linewidth} | p{0.3\linewidth} |}\hline
-        Datum      & Thema          & Raum    \\\hline
-        20.08.2008 & Graphentheorie & HS 3.13 \\
-        01.10.2008 & Biomathematik  & HS 1.05 \\\hline
-    \end{tabular}
-\end{table}
-
-Hier wird auf die Formel \ref{Gl1} verwiesen.
-
-\begin{align}
-    x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl1}
-\end{align}
-\begin{align}
-    x = -\frac{p}{2}\pm\sqrt{\frac{p^2}{4}-q}\label{Gl2}
-\end{align}
-
-Literaturverweise sollten automatisch verwaltet werden, vor allem, wenn es viele Quellenverweise gibt. Beispiele sind  \cite{Ko05a}, \cite{Ko05b}, \cite{MiGo05}, \cite{TeGo14}, \cite{HuHa07}, \cite{HuZi10}, \cite{ZiKu07}, \cite{He07}, \cite{SIE11}, \cite{SIE14}, \cite{ISO98}, \cite{ATM11}, \cite{Hu11}, \cite{Po10}. Das verwendete Zitierformat (bzw.~das Format des Literaturverzeichnisses) ist entspechend der Vorgaben der Studiengänge zu wählen.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\chapter{Dritte Überschrift der Tiefe 1 (chapter)}
-Hier wird etwas Quellcode dargestellt:
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of Problem description
+\chapter{Problem description}
+When developing automated test cases for a product which has very long life cycles, due to being incorporated in building infrastructure, of 10 years or more, it can be expected that involved maintenance labor of existing test cases surpasses the creation of new test cases. But even in such long-lasting products, big system changes \textit{(e.g. \ac{ui} redesign, new controller architecture, ...)} eventually occur. Such a change incurs a new evaluation and design of existing test procedures, to accommodate for the new system or \ac{ui}, even if the actual use-case and performed steps fundamentally remain the same.
+For the business it is therefor beneficial to have testing tools, which reduce the maintenance costs of such legacy test costs, by being dynamic and adaptable to the given test environment.\\
+% THIS PART requires more research in the literature to write a more coherent problem description
+% I DON'T EVEN KNOW IF I NEED THIS PART
+% Such a change incurs a new evaluation and design of existing test procedures, to accommodate for the new system or \ac{ui}, even if the actual use-case and performed steps fundamentally remain the same. The development of a breaking change must then factor in the costs of changing legacy tests and it may result in decisions that will have less test quality as a result, in favor of bringing in more money for the business.\\
+% Therefor it can be beneficial for the tester to make use of tools, which reduce development costs incurred.
+% When developing test cases for \aclp{ui}, it is necessary to differentiate between white-box and black-box testing. A white-box testing approach would incorporate knowledge about the code of the \ac{ui}, where a tester would know about the types of widgets used and their applied properties, amongst other things related to the contents of the source. This testing approach is typically used in unit and early integration testing, possibly performed by the developer themselves. In black-box testing, such information is completely stripped away and it is best-practice to leave such work to people outside of the development team to avoid confirmation-bias. % TODO citations for testing approaches, best-practice, etc.
+% The context of this paper focuses on the latter with the limitation, that the author has knowledge of the library used and the hardware product itself. The author is a professional in testing and test automation, aware of the risks involved when it comes to knowledge about inner workings of the system under test. % TODO citation of involved risks due to confirmation bias
+% As such, the main input for the tool will be limited to what is accessible to the tester, which is constrained to be a black-box testing approach.\\
+\section{Problem context at Schrack Seconet}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of research questions
+\chapter{Research questions}
+% need to properly define this part
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of literature & theory
+\chapter{Existing literature and theoretical basis}
+\hidsection{\acf{cnn}}
+\hidsubsection{\acf{yolo} architecture}
+\hidsection{\acf{lvgl}}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of generator development
+\chapter{Development of synthesized datasets}
+There generally is no available dataset for the target graphics library (\ac{lvgl}) of this research, so it was mandatory to create one during project development. Creating such a dataset artificially, meaning the images are not based on real world \acp{ui}, has the benefit of being able to adjust the size, variation and balance of the dataset very precisely. It would however be a complicated and time-consuming endeavour, if all of these \aclp{ui} would be created manually using regular \ac{lvgl} code, given that typical datasets for a \ac{ml} model of this type require hundreds of pictures or even more.\\
+This is why a generator must be built, which is capable of creating and placing widgets in a structured manner. A screenshot of the displayed window needs to be captured and any metadata (size and position) of placed widgets must be gathered for creating corresponding annotations. The generator will also need to handle variation in visual representation of widgets, otherwise resulting datasets would be biased and detection accuracy of the model would be bad when used on screenshots of real-world examples, which typically incorporate varying visual representations of the same widget type.\\
+In order to create variety in individual widgets, a randomized approach is used, where the outputted widgets will have varying styles applied to them. To gain more fine-control on the final visual representation of an created \ac{ui}, an additional design mode is necessary, where the creation of user interfaces can be statically described. The design mode will allow for creation of realistically looking \acp{ui}, while the random mode will allow for the creation of varying visual representation of the individual widgets.\\
+Since the creation of a window with corresponding in \ac{lvgl} is typically singular, it will be necessary to have a mechanism to repeatedly call the generator to obtain a new image with each iteration. Using a modular approach, this paper will separate the generator, capable of producing a single image with annotations, from the the so-called randomizer, which will loop the generator repeatedly for an arbitrary amount of iterations. This approach allows for a focused implementation that is capable of producing a good singular image, while having a secondary implementation that solely focuses on the organisation and creation of the dataset. Additionally, when written in the modular approach, it also allows for separation of concerns, where the generator will only need to deal with the intricacies of the \ac{lvgl} API, while the randomizer can focus on the structural requirements of the dataset for the chosen model.\\
+\section{First generator version in C}
+The initial generator (v1) is forked from the existing VSCode simulator project of \ac{lvgl}. The simulator was stripped from any demo code and re-used as a binary with \ac{cli} arguments. For proper operation, the \code{lv\_conf.h} file was also modified, to increase allocation memory and deactivate unnecessary features. In the configuration, the default color depth was also modified to be 24 bit, so that output images would appear in higher quality. To be able to store screenshots, an additional library named \code{lv\_100ask\_screenshot} was used, which deals with the proper JPEG encoding using the \code{tiny\_jpeg} library.\\
+Since the generator uses the allocation and storage mechanisms provided by \ac{lvgl}, it is necessary to use an identifier for the target storage system as prefix to the output filename. For this the \code{\textbackslash} character was chosen, so when supplying the \ac{cli} with a desired output filename, an example argument would look like this: \code{\textbackslash screenshot.jpg}\\
+The following usage information will explain the available console arguments for this generator version:
 \begin{listing}[htbp]
     \begin{minted}[
-    frame=single,
-    framesep=2mm,
-    baselinestretch=1.2,
-    bgcolor=white,
-    fontsize=\footnotesize,
-    linenos
-    ]{c}
-#include <iostream>
-
-void SayHello(void)
-{
-    // Kommentar
-    cout << "Hello World!" << endl;
-}
-
-int main(int argc, char **argv)
-{
-    SayHello();
-    return 0;
-}
-\end{minted}
-    \caption{Hello-World}
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize
+        ]{c}
+Usage: ./lvgl_ui_generator/build/bin/demo [OPTIONS]
+Options:
+-m <mode>                   Set the operation mode ("randomizer" or "design")
+Randomizer Mode Options:
+-w <width>                  Set the width of the UI
+-h <height>                 Set the height of the UI
+-c <widget_count>           Set the number of widgets to be randomized
+-t <widget_types>           Comma-separated list of widget types to be used
+-o <output_file>            Set the output file path
+-d <delay_count>            Set the screenshot delay count
+-l <layout>                 Set the layout type
+    \end{minted}
+    \caption{Usage instructions of LVGL generator v1}
 \end{listing}
+\\
+\begin{figure}
+    \caption{Example output of generator v1}
+    \centering
+    \includegraphics[width=\textwidth]{generator_v1_example.jpg}
+\end{figure}
+When run, the generator will produce an image in the provided width and height. It will place randomly chosen widgets up to the given count on the window and use the selected layout (none, grid, flex) to structure them.
+\\
+The layout structuring of widgets helped in outputting more placement variation in the final image. When using \code{flex}, the created widgets are aligned and will wrap onto the next line if they run out of width. In the \code{grid} layout, widgets would be placed in a grid-like pattern over the whole image. Finally in the \code{none} layout, widgets would be absolutely positioned randomly over the screen, sometimes also causing overlap of widget types.
+\clearpage
+\subsection{Development issues}
+During development and testing of the first generator, it became apparent, that it would take a lot more time to include more widget types and implement a design mode as well. Due to the inherent low-level nature of the C programming language, intricacies of the \ac{lvgl} allocation and also issues with the rendering using the X window system, the program was deemed a failure early on.
+\section{Second generator version in Micropython}
+\section{Random mode}
+\subsection{Style and state variation}
+\section{Design mode}
+\subsection{Design contexts and themes}
+\subsection{JSON schema}
+\section{Dataset creation}
+\subsection{Third-party integrations} % ClearML & LLM (ChatGPT)
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of model training
+\chapter{Training of YOLO model}
+\section{Training pipeline}
+\subsection{Training agent on Google Colab}
+\section{Tuning for best hyperparameters}
+\section{Hyperparameter optimization}
+\section{Further experiments}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of results
+\chapter{Research results}
+\section{Model performance}
+\subsection{Random based dataset}
+\subsection{Design based dataset}
+\section{Impact of style variation}
+\clearpage
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of discussion
+\chapter{Discussion}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of content
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of listings
+\clearpage % Beginne neue Seite
 
+\printbib % Literaturverzeichnis LaTeX-Zitier-Standard
+%\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
+\clearpage
 
-\section{Algorithms}
+\listoffigures % Abbildungsverzeichnis
+\clearpage
 
+\listoftables % Tabellenverzeichnis
+\clearpage
 
-Use a defined environment for algorithms.
+\listoflistings % Quellcodeverzeichnis
+\clearpage
 
-Algorithm \ref{alg:euclid} is an example from the gallery (\url{https://www.overleaf.com/latex/examples/euclids-algorithm-an-example-of-how-to-write-algorithms-in-latex/mbysznrmktqf}) .
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-\begin{algorithm}
-    \caption{Euclid’s algorithm}\label{alg:euclid}
-    \begin{algorithmic}[1]
-        \Procedure{Euclid}{$a,b$}\Comment{The g.c.d. of a and b}
-        \State $r\gets a\bmod b$
-        \While{$r\not=0$}\Comment{We have the answer if r is 0}
-        \State $a\gets b$
-        \State $b\gets r$
-        \State $r\gets a\bmod b$
-        \EndWhile\label{euclidendwhile}
-        \State \textbf{return} $b$\Comment{The gcd is b}
-        \EndProcedure
-    \end{algorithmic}
-\end{algorithm}
-%
-\end{comment}
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnen die Verzeichnisse.
-    \clearpage % Beginne neue Seite
-
-    \printbib % Literaturverzeichnis LaTeX-Zitier-Standard
-    %\printbib{Literatur}                                             % Literaturverzeichnis FH-Zitier-Standard
-    \clearpage
-
-    \listoffigures % Abbildungsverzeichnis
-    \clearpage
-
-    \listoftables % Tabellenverzeichnis
-    \clearpage
-
-    \listoflistings % Quellcodeverzeichnis
-    \clearpage
-
-    \phantomsection
-    \addcontentsline{toc}{chapter}{\listacroname}
-    \chapter*{\listacroname}
-    \begin{acronym}
-        [YOLO] \acro{yoloAlt}[YOLO]{You only live once} \acro{yolo}[YOLO]{You Only Look Once}
-        \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics} \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
-        \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
-    \end{acronym}
-    \begin{acronym}
-        [UI] \acro{ui}[UI]{user interface} \acro{gui}[GUI]{graphical user interface}
-    \end{acronym}
-    \begin{acronym}
-        [TEST] \acro{ta}[TA]{test automation} \acro{sut}[SUT]{system under test}
-        \acro{dut}[DUT]{device under test} \acro{hil}[HiL]{Hardware-in-the-Loop}
-        \acro{sil}[SiL]{Software-in-the-Loop} \acro{pil}[PiL]{Processor-in-the-Loop}
-        \acro{mil}[MiL]{Model-in-the-Loop}
-    \end{acronym}
-    \begin{acronym}
-        [TECH] \acro{json}[JSON]{JavaScript Object Notation}
-    \end{acronym}
-    \begin{acronym}
-        [EMBSYS] \acro{rtos}[RTOS]{Real-Time Operating System} \acro{led}[LED]{Light Emitting Diode}
-        \acro{lcd}[LCD]{Liquid Crystal Display} \acro{pwm}[PWM]{Pulse Width Modulator}
-        \acro{iso}[ISO]{International Standards Organization} \acro{lvgl}[LVGL]{Light and versatile graphics library}
-        \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
-    \end{acronym}
-    \begin{acronym}
-        [SSGNET] \acro{fas}[FAS]{fire alarm system} \acro{hcs}[HCS]{health care system}
-    \end{acronym}
-    \begin{acronym}
-        [MACHINELEARNING] \acro{ml}[ML]{machine learning} \acro{mlops}[]{machine learning operations}
-        \acro{llm}[LLM]{large language model} \acro{gpt}[GPT]{generative pre-trained transformer}
-    \end{acronym}
-
-    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Hier beginnt der Anhang.
-    \clearpage
-    \appendix
-    \chapter{Anhang A}
-    \clearpage
-    \chapter{Anhang B}
+\phantomsection
+\addcontentsline{toc}{chapter}{\listacroname}
+\chapter*{\listacroname}
+% TODO REMOVE UNUSED ACRONYMS AT THE END OF WRITING
+\begin{acronym}
+    \acro{yoloAlt}[YOLO]{You only live once}
+    \acro{yolo}[YOLO]{You Only Look Once}
+    \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics}
+    \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
+    \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
+    \acro{ui}[UI]{user interface} \acro{gui}[GUI]{graphical user interface}
+    \acro{ta}[TA]{test automation} \acro{sut}[SUT]{system under test}
+    \acro{dut}[DUT]{device under test} \acro{hil}[HiL]{Hardware-in-the-Loop}
+    \acro{sil}[SiL]{Software-in-the-Loop} \acro{pil}[PiL]{Processor-in-the-Loop}
+    \acro{mil}[MiL]{Model-in-the-Loop}
+    \acro{json}[JSON]{JavaScript Object Notation}
+    \acro{cli}[CLI]{Command-line interface}
+    \acro{mcu}[MCU]{Microcontroller unit}
+    \acro{rtos}[RTOS]{Real-Time Operating System}
+    \acro{led}[LED]{Light Emitting Diode}
+    \acro{lcd}[LCD]{Liquid Crystal Display}
+    \acro{pwm}[PWM]{Pulse Width Modulator}
+    \acro{iso}[ISO]{International Standards Organization}
+    \acro{lvgl}[LVGL]{Light and versatile graphics library}
+    \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
+    \acro{fas}[FAS]{fire alarm system}
+    \acro{hcs}[HCS]{health care system}
+    \acro{ml}[ML]{machine learning}
+    \acro{mlops}[MLOPS]{machine learning operations}
+    \acro{llm}[LLM]{large language model}
+    \acro{gpt}[GPT]{generative pre-trained transformer}
+    \acro{cnn}[CNN]{Convolutional Neural Network}
+\end{acronym}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of listings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of appendix
+\clearpage
+\appendix
+\chapter{... to be added here ...}
+\clearpage
 \end{document}
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Ende des Inhalts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of appendix
