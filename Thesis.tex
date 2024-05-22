@@ -107,8 +107,9 @@ The following usage information will explain the available console arguments for
         framesep=2mm,
         baselinestretch=1.2,
         bgcolor=white,
-        fontsize=\footnotesize
-        ]{c}
+        fontsize=\footnotesize,
+        breaklines
+        ]{shell-session}
 Usage: ./lvgl_ui_generator/build/bin/demo [OPTIONS]
 Options:
 -m <mode>                   Set the operation mode ("randomizer" or "design")
@@ -125,24 +126,186 @@ Randomizer Mode Options:
 \end{listing}
 \\
 \begin{figure}
-    \caption{Example output of generator v1}
+    \caption{Example output of generator v1 (640x640, 40 random widgets)}
     \centering
     \includegraphics[width=\textwidth]{generator_v1_example.jpg}
+    \label{fig:genv1example}
 \end{figure}
-When run, the generator will produce an image in the provided width and height. It will place randomly chosen widgets up to the given count on the window and use the selected layout (none, grid, flex) to structure them.
+When run, the generator will produce an image in the provided width and height. Fig. \ref{fig:genv1example}\\It will place randomly chosen widgets up to the given count on the window and use the selected layout (none, grid, flex) to structure them.
 \\
 The layout structuring of widgets helped in outputting more placement variation in the final image. When using \code{flex}, the created widgets are aligned and will wrap onto the next line if they run out of width. In the \code{grid} layout, widgets would be placed in a grid-like pattern over the whole image. Finally in the \code{none} layout, widgets would be absolutely positioned randomly over the screen, sometimes also causing overlap of widget types.
 \clearpage
 \subsection{Development issues}
-During development and testing of the first generator, it became apparent, that it would take a lot more time to include more widget types and implement a design mode as well. Due to the inherent low-level nature of the C programming language, intricacies of the \ac{lvgl} allocation and also issues with the rendering using the X window system, the program was deemed a failure early on.
+During development and testing of the first generator, it became apparent, that implementing further widget types would create a lot of complexity due to parameter passing in code. Since the C language does not inherently have classes, it was considered to be much more difficult to implement multiple widget types, each of which require a different set of options to be displayed properly.\\
+Additionally, issues like segmentation faults due to window deletion occurred, which were inherited from the forked project. The implementation of a design mode was attempted, but this only increased complexity, which resulted in more unreliability of the program, despite the authors experience in the language. Frequent errors in compilation as well as a high compilation time due to the included \ac{lvgl} examples, which the author was not able to remove, were halting and slowing down development time. A lot of features \textit{(widget styles and states, widget property randomization, ...)} were still left to be implemented at a low level and C being a systems programming language, it was becoming too big of a problem for the project.\\\\
+The general implementation based on C proved to be much more error-prone as a result of these issues and was therefor considered too complex for usage in a generation pipeline. A new solution was sought after, which would allow implementation of the generator in a more resilient and forgiving programming language.\\
+\ac{lvgl} provides C bindings for usage and implementation in other programming languages. A language promoted by the creators themselves is micropython, which is a reduced implementation of python for running on hardware. While the issues faced with the initial generator certainly are solvable, there existed no premise to continue in the C language. A new version in that language was considered to be a simpler approach that would refocus the project on the dataset creation matter at hand.
+\clearpage
 \section{Second generator version in Micropython}
+The second generator version is implemented in micropython, and was started as a fresh project using the \code{lv\_micropython} project as a necessary sub-module for compiling the micropython binary including the \code{lv\_bindings} module.\\
+Rewriting the functionality of the initial generator was much simpler, as the binary comes with \code{argparse} for easily creating a \ac{cli} interface. Having the functionality of classes, it was also easier to differentiate between the two modes with their own source files. Widget creation was divided into separate functions, one for each widget type, and then called via a mapping of the type name to the creation function. This proved to be much more maintainable throughout project development and issues were able to be faced on an individual basis per implemented type.\\
+Both modes provide a function to retrieve the top-level container and all its children in a dictionary object format, containing all relevant metadata information gathered through usage of the \code{coords\_t} object. This \ac{lvgl} object is necessary, as it stores the coordinates of a widget in relation to the whole window, while other methods usually provide this information in relation to the parent container that the widget resides in.\\
+The retrieved container is passed to a screenshot function, which uses a manually added JPEG encoding from the tinyjpeg project to create an image. Using the coordinate metadata, the annotation file of the resulting image is created in \ac{yolo} format (\code{class center\_x center\_y center\_width center\_height}) and also normalized if the user provides the corresponding flag.
+A resulting example image using design mode is illustrated in Fig.\ref{fig:genv2example} and its corresponding annotation file is listed below.
+\begin{figure}
+    \caption{Example output of generator v2 (640x640, widget\_showcase.json)}
+    \centering
+    \includegraphics[width=\textwidth]{generator_v2_example.jpg}
+    \label{fig:genv2example}
+\end{figure}
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize
+        ]{shell-session}
+textarea 0.3625 0.784375 0.234375 0.15625
+table 0.6625 0.821875 0.3328125 0.2296875
+checkbox 0.2046875 0.140625 0.04375 0.03125
+arc 0.5609375 0.2109375 0.203125 0.203125
+label 0.0734375 0.2875 0.0390625 0.025
+label 0.0859375 0.328125 0.065625 0.025
+label 0.478125 0.065625 0.0375 0.025
+label 0.7078125 0.065625 0.059375 0.025
+label 0.1109375 0.1375 0.1140625 0.025
+bar 0.2609375 0.2859375 0.15625 0.0203125
+label 0.0921875 0.184375 0.078125 0.025
+label 0.1421875 0.246875 0.1765625 0.025
+switch 0.2234375 0.1953125 0.08125 0.046875
+buttonmatrix 0.2296875 0.4875 0.40625 0.203125
+button 0.1296875 0.08125 0.1515625 0.05625
+calendar 0.6015625 0.5390625 0.3046875 0.3046875
+scale 0.7796875 0.2109375 0.203125 0.203125
+slider 0.2609375 0.3265625 0.15625 0.0203125
+roller 0.8328125 0.4890625 0.128125 0.20625
+dropdown 0.128125 0.7375 0.203125 0.0625
+    \end{minted}
+    \caption{Usage instructions of LVGL generator v1}
+\end{listing}
+\clearpage
+\hidsubsection{Distorted output images due to render race conditions}
+The used snapshot API sometimes causes output issues, since race-conditions can occur due to render updates while the referenced image data is still being encoded, resulting in distorted or sheared images. This largely originates from adding the JPEG encoding in micropython, which inherently is much slower than its C counterpart. While the issue was not solved during paper development due to its late discovery, a problem solution using a compiled C module of the latest tinyjpeg version was discussed in development forums of \ac{lvgl}. Adding this module will improve encoding speed and thus not face race conditions due to underlying render updates by \ac{lvgl}. Images which had this issue needed to be regenerated and datasets were fixed manually.
+\hidsubsection{Memory allocation errors}
+Since the image encoding takes place in micropython, it actually takes up a lot more memory in heap. When creating and encoding images with the generator, it may result in memory allocation errors, depending on available memory on the running machine. This issue is not solved in the final generator version of the paper and was circumvented by retry mechanisms when creating image files using the dataset pipeline.
 \section{Random mode}
+In random mode, the generator will produce a window of desired width and height. It randomly chooses widgets from the user provided type list and places them into a container. Since absolute positioning proved to be most suitable for random generation, the implementation of layouts was omitted. To avoid overlap, a spatial map was used, to find free space in the window during widget creation and placement.\\
+The usage description in Listing \ref{code:genv2usage} provides an overview of the parameters for this mode.
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        breaklines
+        ]{shell-session}
+usage: src/main.py [-h] [-m, --mode mode] [-?, --usage] [-n, --normalize] [-o, --output_file output_file] [-W, --width width] [-H, --height height] [-c, --widget_count widget_count] [-t, --widget_types widget_types+] [-l, --layout layout] [--random-state]
+
+Process CLI arguments for the UI generator.
+
+optional args:
+  -h, --help                        show this message and exit
+  -m, --mode                        mode the mode to run the program in
+  -?, --usage                       Print usage information for that mode.
+  -n, --normalize                   normalize the bounding boxes
+  -o, --output_file output_file     The output file (screenshot)
+  -W, --width width                 the width of the UI
+  -H, --height height               the height of the UI
+  -c, --widget_count widget_count   the count of widgets
+  -t, --widget_types widget_types+  A list of widget types
+  -l, --layout layout               the layout option
+  --random-state                    Use a random state for each created widget (experimental)
+    \end{minted}
+    \caption{Usage instructions of LVGL generator v2 in random mode}
+    \label{code:genv2usage}
+\end{listing}\\\\
 \subsection{Style and state variation}
+When using random mode, the generator will randomize applied style of widgets to artificially create variation in created datasets. Additionally, there is an experimental feature, which will also randomize the state of widgets. The latter is not recommended for usage in training, as sometimes this might cause widgets to not be displayed if their state is invalid or disabled, which will confuse the model, as the created metadata will still include the annotation of said widget.\\
+Listing \ref{code:randomized-properties} shows the properties and their range of possible values to be randomized. Listing \ref{code:randomized-state} shows the available states.
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        breaklines
+        ]{python}
+# List of style properties to randomize
+properties = [
+    ('set_bg_color', lv.color_make),
+    ('set_bg_opa', lambda: random.randint(0, 100)),
+    ('set_border_color', lv.color_make),
+    ('set_border_opa', lambda: random.randint(0, 100)),
+    ('set_border_width', lambda: random.randint(0, 10)),
+    ('set_outline_width', lambda: random.randint(0, 10)),
+    ('set_outline_color', lv.color_make),
+    ('set_outline_opa', lambda: random.randint(0, 100)),
+    ('set_shadow_width', lambda: random.randint(0, 15)),
+    ('set_shadow_offset_x', lambda: random.randint(0, 10)),
+    ('set_shadow_offset_y', lambda: random.randint(0, 10)),
+    ('set_shadow_color', lv.color_make),
+    ('set_shadow_opa', lambda: random.randint(0, 100)),
+    ('set_line_width', lambda: random.randint(0, 10)),
+    ('set_line_dash_width', lambda: random.randint(0, 10)),
+    ('set_line_dash_gap', lambda: random.randint(0, 10)),
+    ('set_line_rounded', lambda: random.choice([True, False])),
+    ('set_line_color', lv.color_make),
+    ('set_line_opa', lambda: random.randint(0, 100)),
+    ('set_text_color', lv.color_make),
+    ('set_text_opa', lambda: random.randint(0, 100)),
+    ('set_text_letter_space', lambda: random.randint(0, 10)),
+    ('set_text_line_space', lambda: random.randint(0, 10)),
+    ('set_opa', lambda: random.randint(0, 100)),
+    ('set_align', lambda: random.choice([lv.ALIGN.CENTER, lv.ALIGN.TOP_LEFT, lv.ALIGN.TOP_RIGHT, lv.ALIGN.TOP_MID, lv.ALIGN.BOTTOM_LEFT, lv.ALIGN.BOTTOM_RIGHT, lv.ALIGN.BOTTOM_MID, lv.ALIGN.LEFT_MID, lv.ALIGN.RIGHT_MID, lv.ALIGN.DEFAULT])),
+    ('set_pad_all', lambda: random.randint(0, 10)),
+    ('set_pad_hor', lambda: random.randint(0, 10)),
+    ('set_pad_ver', lambda: random.randint(0, 10)),
+    ('set_pad_gap', lambda: random.randint(0, 10)),
+    ('set_pad_top', lambda: random.randint(0, 10)),
+    ('set_pad_bottom', lambda: random.randint(0, 10)),
+    ('set_pad_left', lambda: random.randint(0, 10)),
+    ('set_pad_right', lambda: random.randint(0, 10)),
+    ('set_pad_row', lambda: random.randint(0, 10)),
+    ('set_pad_column', lambda: random.randint(0, 10)),
+    ('set_margin_top', lambda: random.randint(0, 10)),
+    ('set_margin_bottom', lambda: random.randint(0, 10)),
+    ('set_margin_left', lambda: random.randint(0, 10)),
+    ('set_margin_right', lambda: random.randint(0, 10))
+]
+    \end{minted}
+    \caption{Available style properties which are randomized in given value range}
+    \label{code:randomized-properties}
+\end{listing}
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        breaklines
+        ]{python}
+def randomize_state(widget: lv.obj):
+    if hasattr(widget, "set_state"):
+        state = random.choice([lv.STATE.CHECKED, lv.STATE.DISABLED, lv.STATE.FOCUSED, lv.STATE.PRESSED, lv.STATE.HOVERED, lv.STATE.EDITED])
+        widget.set_state(state, True) # Add the state
+    else:
+        raise AttributeError(f"Widget {widget} does not have a 'state' property.")
+    \end{minted}
+    \caption{Available state properties which are randomized in given options}
+    \label{code:randomized-state}
+\end{listing}
+\clearpage
 \section{Design mode}
 \subsection{Design contexts and themes}
 \subsection{JSON schema}
 \section{Dataset creation}
 \subsection{Third-party integrations} % ClearML & LLM (ChatGPT)
+\hidsubsubsection{Integration with ClearML}
+\hidsubsubsection{Integration with LLM (gpt-4-turbo)}
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of model training
 \chapter{Training of YOLO model}
