@@ -10,6 +10,8 @@
 \usepackage{csquotes}
 \usepackage{algorithm} % Umgebung f Algorithmen
 \usepackage[noend]{algpseudocode}
+\usepackage{svg}
+\usepackage{mdframed}
 \graphicspath{ {./PICs/} }
 % Wenn Sie während Ihrer Arbeit
 % merken, dass Sie zusätzliche Funktionen
@@ -29,6 +31,34 @@
 \newcommand{\hidsubsubsection}[1]{\bgroup\let\addcontentsline=\nocontentsline\subsubsection{#1}\egroup}
 % Defines an alias for writing inline monospace font for code related things
 \def\code#1{\texttt{#1}}
+% src: https://tex.stackexchange.com/questions/194426/split-itemize-into-multiple-columns
+\usepackage{etoolbox,refcount}
+\usepackage{multicol}
+
+\newcounter{countitems}
+\newcounter{nextitemizecount}
+\newcommand{\setupcountitems}{%
+  \stepcounter{nextitemizecount}%
+  \setcounter{countitems}{0}%
+  \preto\item{\stepcounter{countitems}}%
+}
+\makeatletter
+\newcommand{\computecountitems}{%
+  \edef\@currentlabel{\number\c@countitems}%
+  \label{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\newcommand{\nextitemizecount}{%
+  \getrefnumber{countitems@\number\c@nextitemizecount}%
+}
+\newcommand{\previtemizecount}{%
+  \getrefnumber{countitems@\number\numexpr\value{nextitemizecount}-1\relax}%
+}
+\makeatother    
+\newenvironment{AutoMultiColItemize}{%
+\ifnumcomp{\nextitemizecount}{>}{3}{\begin{multicols}{2}}{}%
+\setupcountitems\begin{itemize}}%
+{\end{itemize}%
+\unskip\computecountitems\ifnumcomp{\previtemizecount}{>}{3}{\end{multicols}}{}}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Einträge für Deckblatt
 \title{Precision at Pixel-Level:\\\acl{yoloAlt} doing UI test automation}
 
@@ -87,9 +117,18 @@ For the business it is therefor beneficial to have testing tools, which reduce t
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of literature & theory
 \chapter{Existing literature and theoretical basis}
+
 \hidsection{\acf{cnn}}
 \hidsubsection{\acf{yolo} architecture}
+\begin{figure}
+    \caption{Model structure of YOLOv8 detection models by RangeKing}
+    \centering
+    \includegraphics[width=\textwidth]{yolov8_model_architecture.jpg}
+    \label{fig:yolov8-model-architecture}
+\end{figure}
+\newpage
 \hidsection{\acf{lvgl}}
+This graphics library is a popular choice amongst embedded system engineers and has seen much usage, due to its good support for a wide range of target architectures and devices. Its performance works well in  resource constrained systems.
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of generator development
 \chapter{Development of synthesized datasets}
@@ -146,11 +185,32 @@ The second generator version is implemented in micropython, and was started as a
 Rewriting the functionality of the initial generator was much simpler, as the binary comes with \code{argparse} for easily creating a \ac{cli} interface. Having the functionality of classes, it was also easier to differentiate between the two modes with their own source files. Widget creation was divided into separate functions, one for each widget type, and then called via a mapping of the type name to the creation function. This proved to be much more maintainable throughout project development and issues were able to be faced on an individual basis per implemented type.\\
 Both modes provide a function to retrieve the top-level container and all its children in a dictionary object format, containing all relevant metadata information gathered through usage of the \code{coords\_t} object. This \ac{lvgl} object is necessary, as it stores the coordinates of a widget in relation to the whole window, while other methods usually provide this information in relation to the parent container that the widget resides in.\\
 The retrieved container is passed to a screenshot function, which uses a manually added JPEG encoding from the tinyjpeg project to create an image. Using the coordinate metadata, the annotation file of the resulting image is created in \ac{yolo} format (\code{class center\_x center\_y center\_width center\_height}) and also normalized if the user provides the corresponding flag.
-A resulting example image using design mode is illustrated in Fig.\ref{fig:genv2example} and its corresponding annotation file is listed below.
+A resulting example image using design mode is illustrated in Fig.\ref{fig:genv2example} and its corresponding annotation file is listed below.\\
+The following widget types were implemented and used in this generator version:
+\begin{itemize}
+  \begin{AutoMultiColItemize}
+    \item Arc
+    \item Bar
+    \item Button
+    \item Buttonmatrix
+    \item Calendar
+    \item Checkbox
+    \item Dropdown
+    \item Label
+    \item Roller
+    \item Scale
+    \item Slider
+    \item Spinbox
+    \item Switch
+    \item Table
+    \item Textarea
+  \end{AutoMultiColItemize}
+\end{itemize}
+% TODO arrange the figure and annotation to be alongside each other
 \begin{figure}
     \caption{Example output of generator v2 (640x640, widget\_showcase.json)}
     \centering
-    \includegraphics[width=\textwidth]{generator_v2_example.jpg}
+    \includegraphics[height=0.4\textheight]{generator_v2_example.jpg}
     \label{fig:genv2example}
 \end{figure}
 \begin{listing}[htbp]
@@ -182,13 +242,20 @@ slider 0.2609375 0.3265625 0.15625 0.0203125
 roller 0.8328125 0.4890625 0.128125 0.20625
 dropdown 0.128125 0.7375 0.203125 0.0625
     \end{minted}
-    \caption{Usage instructions of LVGL generator v1}
+    \caption{Generated annotation file for example output of generator v2}
 \end{listing}
 \clearpage
-\hidsubsection{Distorted output images due to render race conditions}
-The used snapshot API sometimes causes output issues, since race-conditions can occur due to render updates while the referenced image data is still being encoded, resulting in distorted or sheared images. This largely originates from adding the JPEG encoding in micropython, which inherently is much slower than its C counterpart. While the issue was not solved during paper development due to its late discovery, a problem solution using a compiled C module of the latest tinyjpeg version was discussed in development forums of \ac{lvgl}. Adding this module will improve encoding speed and thus not face race conditions due to underlying render updates by \ac{lvgl}. Images which had this issue needed to be regenerated and datasets were fixed manually.
-\hidsubsection{Memory allocation errors}
+\hidsubsubsection{Distorted output images due to render race conditions}
+The used snapshot API sometimes causes output issues, since race-conditions can occur due to render updates while the referenced image data is still being encoded, resulting in distorted or sheared images as seen in the example Fig.\ref{fig:genv2distortedexample}. This largely originates from adding the JPEG encoding in micropython, which inherently is much slower than its C counterpart. While the issue was not solved during paper development due to its late discovery, a problem solution using a compiled C module of the latest tinyjpeg version was discussed in development forums of \ac{lvgl}. Adding this module will improve encoding speed and thus not face race conditions due to underlying render updates by \ac{lvgl}. Images which had this issue needed to be regenerated and datasets were fixed manually.
+\begin{figure}
+    \caption{Example image with distortions from generator v2}
+    \centering
+    \includegraphics[height=0.45\textheight]{distorted_image_example.jpg}
+    \label{fig:genv2distortedexample}
+\end{figure}
+\hidsubsubsection{Memory allocation errors}
 Since the image encoding takes place in micropython, it actually takes up a lot more memory in heap. When creating and encoding images with the generator, it may result in memory allocation errors, depending on available memory on the running machine. This issue is not solved in the final generator version of the paper and was circumvented by retry mechanisms when creating image files using the dataset pipeline.
+\newpage
 \section{Random mode}
 In random mode, the generator will produce a window of desired width and height. It randomly chooses widgets from the user provided type list and places them into a container. Since absolute positioning proved to be most suitable for random generation, the implementation of layouts was omitted. To avoid overlap, a spatial map was used, to find free space in the window during widget creation and placement.\\
 The usage description in Listing \ref{code:genv2usage} provides an overview of the parameters for this mode.
@@ -300,27 +367,170 @@ def randomize_state(widget: lv.obj):
 \end{listing}
 \clearpage
 \section{Design mode}
-\subsection{Design contexts and themes}
+In design mode, the generator will parse a provided \ac{json} file and create a \ac{ui} according to the specified design. This mode allows for creation of a static \ac{ui} design, which more resembles the expectation of a realistic interface in comparison to the random mode. To allow for variation in this mode, a special type \code{random} is available, which randomly chooses widgets from a given type list and randomizes their appearance. Having this option, allows for randomization in specific portions of the \ac{ui}, while keeping the rest statically defined. In the design file, various styles can be defined. Multiple styles can then be applied to individual widgets and containers by name reference. In general, all possible \textit{setter} properties of \ac{lvgl} styles are allowed, as the implementation checks for the availability of the corresponding setter attribute on a \code{lv.style\_t} object.\\
+Since the design mode only requires a single parameter \textit{(i.e. the path to the design file)}, no further usage instructions are provided in this paper.
+\hidsubsection{Design file rules}
+The creation of design files require a certain set of rules that need to be followed, in order for the creation to work properly.
+\begin{enumerate}
+    \item It is mandatory that the first widget object in \code{root} is a container, as the root widget is always a container.
+    \item The title of the window is not mandatory and not used by the generator. It is only there for reference to the user for describing and recognizing the contents of a design file.
+    \item The \code{styles} object is optional and can be omitted if no styles are defined.
+    \item Added styles are referenced by their name in the \code{style} array of each widget. If a style is not found, the generator will throw a \code{ValueError}.
+    \item A style defines a list of properties that are applied to widgets via the usage of a \code{lv.style\_t} object. The possible properties are the same as documented in the \ac{lvgl} API for styles.
+% (https://docs.lvgl.io/9.1/API/misc/lv\_style\_gen.html#)
+Properties are verified by checking if the specified name has a corresponding \code{setter} attribute in the object. This is done by appending \code{set\_} to the property name, thus the user is required to use the property setter function names without the prefix. For example, to set the background color of a widget, one would use the property \code{bg\_color}. The generator will then look for the \code{set\_bg\_color} attribute in the object and apply the converted value to it.
+    \item If a provided property inside a style object does not actually correspond to an available attribute, the generator will ignore it and continue.
+    \item Values supplied to style properties are converted according to the required type of the property. Some properties taking in special objects, like colors, require a specific string to be supplied (e.g. \code{\#RRGGBB} for any color property or \code{top-left} for the align property).
+    \item If value conversion fails, the property is ignored and the generator will ignore it and continue.
+    \item The id property is mandatory for widgets of type container, as it is required to reference the container inside the children array, when the special widget type random is used.
+    \item The special widget type random may be used to supply a list of widget types for the generator to randomly choose from and then create a random widget in similar fashion to the random mode. This is useful for randomizing widgets in certain areas of the UI, while keeping the rest of the UI static.
+\end{enumerate}
+\newpage
 \subsection{JSON schema}
+In order to validate design files before providing them to the generator, a regular python script is used. This was not included in the generator, as the corresponding package is not available in micropython. The schema was purposely made more strict than what the generator requires, so that validation errors could be provided to the later used \ac{llm}, to offer more detailed guidance during design generation.
+Listing \ref{code:validate-design-script} shows a simple example script to validate a design file with the available schema in the source repository.
+% Link to schema: https://raw.githubusercontent.com/HackXIt/ui-detector/74795557012d5750fa35f1ff5a774d3172c6e953/schema/design_file.schema.json
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        breaklines
+        ]{python}
+def load_json_file(filepath: str):
+    import json
+    with open(filepath, 'r') as f:
+        return json.load(f)
+
+def verify_design_from_file(design_file: str, schema_file: str) -> tuple[bool, Exception]:
+    from jsonschema import validate
+    from jsonschema.exceptions import ValidationError
+    design = load_json_file(design_file)
+    schema = load_json_file(schema_file)
+    try:
+        validate(instance=design, schema=schema)
+        print(f"Provided design file {design_file} is valid.")
+        return True, None
+    except ValidationError as e:
+        print(f"Provided design file {design_file} is invalid:\n{e}")
+        return False, e
+
+if __name__ == '__main__':
+    verify_design_from_file('path/to/design_file.json', 'path/to/design_file.schema.json')
+    \end{minted}
+    \caption{Exemplary validation code for design file using JSON schema}
+    \label{code:validate-design-script}
+\end{listing}
+\clearpage
 \section{Dataset creation}
-\subsection{Third-party integrations} % ClearML & LLM (ChatGPT)
+Both generator modes only ever produce a single image output with a corresponding text file in the \ac{yolo} annotation format. This choice was intended to allow for a separate implementation which will handle the organization of created files, by repeatedly calling the generator and moving the outputs into a dataset folder structure. It was also a necessary choice, as the micropython programming language would have been very limiting for implementing third-party integration.\\
+Furthermore, it also allowed for balancing the representation of classes in random mode, by removing a type from the provided widget list, once a certain threshold of classes is reached.\\
+The dataset creation concept is further illustrated in Fig.\ref{fig:dataset-creation-random} and Fig.\ref{fig:dataset-creation-design}.\\
+The produced annotations in each iteration are post-processed before they are moved into the dataset structure. Widgets that are placed out-of-bounds of the window have annotation values which are not usable for model training, as such they will be removed from the annotation file during this step. The label modifications are generally minor, since they occur rarely, and their affect on model performance is negligible. In the annotations, the written class names also need to be processed, since the \ac{yolo} model cannot interpret classes from their string representation, so they are replaced by their index in the list of implemented types.
+\begin{figure}[!htbp]
+    \caption{Dataset creation concept using random mode}
+    \centering
+    \includesvg[width=\textwidth,keepaspectratio]{PICs/Framework-Generic_generator-random}
+    \label{fig:dataset-creation-random}
+\end{figure}
+\begin{figure}[!htbp]
+    \caption{Dataset creation concept using design mode with gpt}
+    \centering
+    \includesvg[width=\textwidth,keepaspectratio]{PICs/Framework-Generic_design-mode-gpt}
+    \label{fig:dataset-creation-design}
+\end{figure}
+\clearpage
+\subsection{Design contexts and themes}
+Since creation of a large design dataset would additionally require the labor-intensive manual definition of a large set of designs, it was decided to use a \ac{llm} which would handle the creation of those design files. For that purpose, a list of 100x contexts and 100x themes was created. By unique pair combination, this creates a possible list of 10000 design contexts and themes to be provided to the \ac{llm}.\\
+As illustrated in Fig.\ref{fig:dataset-creation-design}, the \ac{llm} would first be instructed to write out a design idea in the provided \ac{ui} context and style theme. Via a system prompt, the model is instructed to include the widgets to be used in the design, a high-level description of the \ac{ui} purpose and a structural description of what the \ac{ui} shall look like.\\
+The idea output is then again fed into the \ac{llm} in a separate context and instructed to output a valid \ac{json} file. It additionally receives the \ac{json} schema as guidance on how to structure and construct the output \ac{json}. The resulting output of the model is then validated against the schema and any validation errors are fed back to the \ac{llm} for correction. Once an output design is valid, it will be stored and added to a design file list, to be generated in a following step. This loop can be repeated for a desired amount of design files, for up to 10000 generations, given our combination list of contexts and themes.
+\subsection{Third-party integration} % ClearML & LLM (ChatGPT)
+The dataset creation process relies heavily on third-party integration. To track individual versions of datasets, a popular experiment tracker named ClearML was used. In order to automate the design file creation process, the proprietary \ac{llm} named ChatGPT was used via OpenAIs available python package and API.
 \hidsubsubsection{Integration with ClearML}
+Whenever a dataset creation starts, a new ClearML task is created and used for generating statistics about the process. The task stores all of the following information:
+\begin{itemize}
+    \item Console output of the script
+    \item Scalar plots displaying generation statistics over iterations
+    \item Metadata about dataset (file split of train,val,train)
+    \item Artifacts (ZIP folder of dataset contents)
+    \item Parameters of the script/task
+    \item Machine environment information
+    \item Version control information (diff, commit hash, ...)
+\end{itemize}
+All of that surrounding information regarding the creation process helps in getting a better understanding about errors and quality of the created dataset.
 \hidsubsubsection{Integration with LLM (gpt-4-turbo)}
+In order to generate design files at a larger scope, OpenAIs gpt-4-turbo model was used in the dataset creation process when using the design mode of generator v2. In order for the model to properly behave and generate usable output, the \ac{gpt} was instructed via system prompts.
+The prompt was designed, so that the format of the idea is structurally similar through each iteration and proper output from the \ac{json} generation step can be expected. The used system prompt for the design \ac{json} can be seen in Listing \ref{code:gpt4-design-json-system-prompt}. Due to their length, the system prompt for the design idea and corresponding examples are omitted from the paper, but can be viewed in the source code repository.
+\begin{listing}[htbp]
+    \begin{minted}[
+        frame=single,
+        framesep=2mm,
+        baselinestretch=1.2,
+        bgcolor=white,
+        fontsize=\footnotesize,
+        breaklines
+        ]{text}
+You are a UI generator.
+Your goal is to create a new single window UI using a specialized JSON format.
+The format specification is available in the design.schema.json file below.
+Follow the provided design guideline of the user when replicating the design idea using the structure of the JSON format.
+Always output a valid JSON object that represents the UI design.
+
+You ALSO MUST adhere to the following SPECIAL RULES:
+- Never use 'grid' container. Use either 'none' or 'flex' container.
+- Containers must be used to set style for the whole window or the specific group of widgets (such as background color and other general styles).
+- Each widget placed inside a 'none' container must have an associated style defining its X and Y coordinates.
+- Widgets may have multiple styles applied to them
+- Window size MUST be 640 x 640 pixels
+- You MUST make sure that coordinates of widgets do not overlap due to width and height of the widgets
+- You MUST make sure that the widgets are within the window bounds (0, 0, 640, 640)
+    \end{minted}
+    \caption{System prompt for gpt-4-turbo generating design file (\ac{json})}
+    \label{code:gpt4-design-json-system-prompt}
+\end{listing}
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of model training
 \chapter{Training of YOLO model}
-\section{Training pipeline}
-\subsection{Training agent on Google Colab}
+The training process illustrated in Fig.\ref{fig:yolo-train} uses the already built training mechanisms of ultralytics \ac{yolo} model version 8. All experiments of the paper were performed using this model version and the python package version used was 8.1.47.
+\begin{figure}[!htbp]
+    \caption{YOLOv8 model training process}
+    \centering
+    \includesvg[width=\textwidth,keepaspectratio]{PICs/Framework-Generic_model-train}
+    \label{fig:yolo-train}
+\end{figure}
+\section{Training tasks in ClearML}
+Every training process of a \ac{yolo} model is automatically tracked via the existing integration of ClearML in the ultralytics \ac{yolo} engine. This was a crucial step in the creation of reproducible results, since all hyper-parameters of the training process are stored and the used dataset is referenced by a unique ID. This also allows for later modification of a training process, by cloning of the training task and manual editing of parameters in the cloned task.
+\subsection{Training agents on local and remote machines}
+In order to train models remotely on a more powerful machine than the authors laptop, a ClearML agent was setup using Google Colab. The creators of ClearML provide a simple mechanism and already defined notebook for starting such an agent. By having this agent readily available, any local or previously started training tasks could be remotely executed. The built integration uses docker containers to execute individual tasks and execution was therefor immutable once finalized. Such an agent was also started on the local machine of the author, to compare results between the two machines and for debugging purposes of the pipeline itself.
 \section{Tuning for best hyperparameters}
+In order to optimize the training process for a given dataset to determine the best set of hyper-parameters, the existing tuning process from the ultralytics engine is used. This tuning process has automatic optimization features, choosing different optimizer algorithms for different epochs.
 \section{Hyperparameter optimization}
-\section{Further experiments}
+The tune process by ultralytics was not always best for producing results. In some cases, the process failed to record the output model weights, despite reporting good results, which led to the creation of a custom \ac{hpo} pipeline.\\
+ClearML offers mechanisms for performing \ac{hpo} on previously executed training tasks. For the optimization of parameters, the Optuna optimizer is used, which offers an algorithm to optimize for a given metric using either discrete value ranges or a defined set of scalar values. The open-source optimizer implementation would then determine the best hyper-parameters for the training task by running it multiple times with a different set of parameters determined by the algorithm, while tracking the target performance metrics. In all \ac{hpo} processes performed, the configured target metric was the \ac{map}, which shows the model performance across different levels of detection difficulty. The \ac{yolo} model provides two \ac{map} metrics:
+\begin{itemize}
+    \item \ac{map}50 - Mean Average Precision at 50\% \ac{iou} threshold
+    \item \ac{map}50-95 - Mean Average Precision averaged over \ac{iou} thresholds from 50\% to 95\% (at 5\% steps)
+\end{itemize}
+The author chose the \ac{map}50-95 metric, as it provided a more comprehensive view of the models performance, which was representative of an overall better accuracy and recall.
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of results
 \chapter{Research results}
+The final project resulted in the creation of custom dataset generator capable of producing \ac{ui} screenshot images with corresponding widget annotations. It provides two modes of operation, which can be used to create datasets of varying image sizes, styling properties and used widget types.
+In addition to that, a \ac{json} design parser was written, which converts a design specification written in accordance to a \ac{json} schema into an image representing a realistically looking \ac{ui}.\\
+Multiple pipelines with integration to ClearML were written, to aid in dataset generation, \ac{yolo} model training and \acf{hpo}.
 \section{Model performance}
+The created generators were used in the research to train a baseline model based on a random dataset. The performance of this baseline model showed such good results, that the author doubted its viability in real-world scenarios, since the resulting metric scores showcased a form of over-optimization for the case of detecting widget types on a white background.\\
+In response to that, another dataset using the implemented design mode was created with the help of an \ac{llm} to produce the necessary design files. The main purpose of the design mode is to create more realistic looking \acp{ui}, with an overall theme applied in the form of styles, which got rid of the white background and allowed the widgets to blend in more within the window.\\
+The improved model was trained on the generated design dataset and shows a decrease in performance when compared to the baseline model. The drop in performance is attributed to the increased difficulty for the model when detecting widgets on colored and styled backgrounds, which slightly blends the visible features of individual widgets with their surroundings, making them harder to detect.\\
+Nevertheless, the model showed very good performance for a few widget types, which demonstrates the viability of using machine learning for detecting widget types based on screenshot data, even though the set widget types is limited.
 \subsection{Random based dataset}
+The random dataset contains 15 different widget types of \ac{lvgl} in varying positions and widget styles (excluding container style), where each widget is represented about 100 times. The images of that dataset each contained 12 widget instances, resulting in 128 files (including a little bit of overshoot in widget type representation). The dataset is uploaded to the repository of the paper and can be referenced by ID \code{4995cded1302441ab74d514d4487952a}.
 \subsection{Design based dataset}
+The design dataset has 145 design files, resulting in a total of 1173 widgets (including containers) spread over 137 generated image files. While the balancing of the design datasets has room for improvements, with certain types being overly preferred by the \ac{llm}, it did affect model performance greatly. The uploaded dataset can be referenced by ID \code{5c8e248bdcc24ee2bb57760f0961c690}. Due to some errors produced by the generation process, manual modifications were necessary, which resulted in the corrected dataset ID \code{8b8abeecffc340e3a839b982d7d49ef0}.
 \section{Impact of style variation}
+An important factor discovered during the research is the importance of style variation when training a \ac{yolo} model on \ac{ui} image data. Given that in the real-world \acp{ui} need to appeal to humans and also be usable by them, it is important to incorporate style variations into training datasets. This avoids over-optimized datasets illustrating best-case detection scenarios where individual widget features would be more easily detected by the model. Incorporating themes and contexts into artificially generated \ac{ui} brings the benefit of creating datasets, that are more aligned with worst-case detection scenarios, where individual widgets need to be differentiated with better precision. It is recommended to experiment with outlines and other style properties when creating such datasets and training future models in the context of \ac{ui} widget detection.
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of discussion
 \chapter{Discussion}
@@ -370,6 +580,9 @@ def randomize_state(widget: lv.obj):
     \acro{hcs}[HCS]{health care system}
     \acro{ml}[ML]{machine learning}
     \acro{mlops}[MLOPS]{machine learning operations}
+    \acro{hpo}[HPO]{hyper-parameter optimization}
+    \acro{iou}[IoU]{Intersection over Union}
+    \acro{map}[mAP]{mean average precision}
     \acro{llm}[LLM]{large language model}
     \acro{gpt}[GPT]{generative pre-trained transformer}
     \acro{cnn}[CNN]{Convolutional Neural Network}
@@ -378,7 +591,7 @@ def randomize_state(widget: lv.obj):
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of appendix
 \clearpage
 \appendix
-\chapter{... to be added here ...}
+\chapter{... appendix ...}
 \clearpage
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of appendix
