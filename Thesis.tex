@@ -594,23 +594,93 @@ The author calls the implementations in the UI detector repository pipelines, ev
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of results
 \chapter{Research results}
-The final project resulted in the creation of custom dataset generator capable of producing \ac{ui} screenshot images with corresponding widget annotations. It provides two modes of operation, which can be used to create datasets of varying image sizes, styling properties and used widget types.
-In addition to that, a \ac{json} design parser was written, which converts a design specification written in accordance to a \ac{json} schema into an image representing a realistically looking \ac{ui}.\\
-Multiple pipelines with integration to ClearML were written, to aid in dataset generation, \ac{yolo} model training and \acf{hpo}.
+The final project resulted in the creation of a custom dataset generator capable of producing \ac{ui} screenshot images with corresponding widget annotations. It provides two modes of operation, which can be used to create datasets of varying image sizes, styling properties and used widget types.
+In addition to that, a \ac{json} design parser was written, which converts a design specification written in accordance to a \ac{json} schema into an image representing a realistically looking \ac{ui}. Multiple pipelines with integration to ClearML were written, to aid in dataset generation, \ac{yolo} model training and \acf{hpo}.
 \section{Model performance}
-The created generators were used in the research to train a baseline model based on a random dataset. The performance of this baseline model showed such good results, that the author doubted its viability in real-world scenarios, since the resulting metric scores showcased a form of over-optimization for the case of detecting widget types on a white background.\\
+The created generators were used in the research to train a baseline model based on a random dataset. The performance of this baseline model showed such good results, that the author doubted the viability in real-world scenarios, since the resulting metric scores showcased a form of over-optimization for the case of detecting widget types on a white background.\\
 In response to that, another dataset using the implemented design mode was created with the help of an \ac{llm} to produce the necessary design files. The main purpose of the design mode is to create more realistic looking \acp{ui}, with an overall theme applied in the form of styles, which got rid of the white background and allowed the widgets to blend in more within the window.\\
 The improved model was trained on the generated design dataset and shows a decrease in performance when compared to the baseline model. The drop in performance is attributed to the increased difficulty for the model when detecting widgets on colored and styled backgrounds, which slightly blends the visible features of individual widgets with their surroundings, making them harder to detect.\\
-Nevertheless, the model showed very good performance for a few widget types, which demonstrates the viability of using machine learning for detecting widget types based on screenshot data, even though the set widget types is limited.
+\begin{table}[]
+    \centering
+    \begin{tabular}{c|c|c|c|c}
+         Dataset & mAP50 & mAP50-95 & fitness & model\_variant \\
+         Train (random) & 0.95312 & 0.86023 & 0.86952 & yolov8n \\
+         Train (design) & 0.77673 & 0.74507 & 0.74824 & yolov8n
+    \end{tabular}
+    \caption{Training results with random \& design dataset}
+    \label{tab:overall-training-results}
+\end{table}\\
+Visualizations of training results for the random dataset are depicted in Fig.\ref{fig:random-training-results},\ref{fig:random-training-confusion},\ref{fig:random-training-labels} and \ref{fig:random-training-f1}.\\
+\begin{figure}
+    \caption{Random dataset training - results}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/results.png}
+    \label{fig:random-training-results}
+\end{figure}
+\begin{figure}
+    \caption{Random dataset training - confusion matrix (normalized)}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/confusion_matrix_normalized.png}
+    \label{fig:random-training-confusion}
+\end{figure}
+\begin{figure}
+    \caption{Random dataset training - label distribution}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/labels.jpg}
+    \label{fig:random-training-labels}
+\end{figure}
+\begin{figure}
+    \caption{Random dataset training - F1 curve}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/F1_curve.png}
+    \label{fig:random-training-f1}
+\end{figure}
+Further training visualizations for the design dataset are depicted in Fig.\ref{fig:design-training-results},\ref{fig:design-training-confusion},\ref{fig:design-training-labels} and \ref{fig:design-training-f1}.
+\begin{figure}
+    \caption{Design dataset training - results}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train373/results.png}
+    \label{fig:design-training-results}
+\end{figure}
+\begin{figure}
+    \caption{Design dataset training - confusion matrix (normalized)}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train373/confusion_matrix_normalized.png}
+    \label{fig:design-training-confusion}
+\end{figure}
+\begin{figure}
+    \caption{Design dataset training - label distribution}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train373/labels.jpg}
+    \label{fig:design-training-labels}
+\end{figure}
+\begin{figure}
+    \caption{Design dataset training - F1 curve}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train373/F1_curve.png}
+    \label{fig:design-training-f1}
+\end{figure}
+\clearpage
 \subsection{Random based dataset}
-The random dataset contains 15 different widget types of \ac{lvgl} in varying positions and widget styles (excluding container style), where each widget is represented about 100 times. The images of that dataset each contained 12 widget instances, resulting in 128 files (including a little bit of overshoot in widget type representation). The dataset is uploaded to the repository of the paper and can be referenced by ID \code{4995cded1302441ab74d514d4487952a}.
+The used random dataset contains 15 different widget types of \ac{lvgl} in varying positions and widget styles (excluding container style), where each widget is represented about 150 times, as showcased in Fig.\ref{fig:random-widget-metrics}. The total amount of widgets in the dataset is 2250, spread over 406 image files.\\
+\begin{figure}
+    \caption{Generator v2 iteration metrics for random dataset}
+    \centering
+    \includegraphics[width=\textwidth]{random_widget_metrics.png}
+    \label{fig:random-widget-metrics}
+\end{figure}
+In the dataset, each image contained 6 widget instances. The dataset is uploaded to the repository of the paper \autocite{ReleaseFinalPaper} and can be referenced by ID \code{04da75baa7084aee83f3b31602c408c2}.
 \subsection{Design based dataset}
-The design dataset has 145 design files, resulting in a total of 1173 widgets (including containers) spread over 137 generated image files. While the balancing of the design datasets has room for improvements, with certain types being overly preferred by the \ac{llm}, it did affect model performance greatly. The uploaded dataset can be referenced by ID \code{5c8e248bdcc24ee2bb57760f0961c690}. Due to some errors produced by the generation process, manual modifications were necessary, which resulted in the corrected dataset ID \code{8b8abeecffc340e3a839b982d7d49ef0}.
+The design dataset has 145 design files. Not all designs could be generated, so only an output of 132 generated images was achieved. Due to the described distortion issue in the generator, the dataset had to be manually corrected by removing broken images and adding in replacements of other design generations. The corrected design dataset contains 186 images.\\
+Since the process of adding in images was performed manually, an exact widget count cannot be given, but is estimated to contain roughly 550 widgets. In Fig.\ref{fig:design-training-labels} the label distribution of the dataset can be seen.\\
+Certain widget types were definitely more preferred by the \ac{llm}, while three (roller, scale, spinbox) are not represented at all. For the design mode it is inherently more difficult to create a balance in distribution, as certain widget types like buttons or labels will always be over-represented when trying to create realistic looking \ac{ui}.
+The original design dataset with some image distortions is referenced by ID \code{5c8e248bdcc24ee2bb57760f0961c690}. The manually corrected version is referenced by ID \code{2fe5e8b06a6249fcb9360c9645e0f7a6}. Both are uploaded to the repository of the paper \autocite{ReleaseFinalPaper}.
 \section{Impact of style variation}
 An important factor discovered during the research is the importance of style variation when training a \ac{yolo} model on \ac{ui} image data. Given that in the real-world \acp{ui} need to appeal to humans and also be usable by them, it is important to incorporate style variations into training datasets. This avoids over-optimized datasets illustrating best-case detection scenarios where individual widget features would be more easily detected by the model. Incorporating themes and contexts into artificially generated \ac{ui} brings the benefit of creating datasets, that are more aligned with worst-case detection scenarios, where individual widgets need to be differentiated with better precision. It is recommended to experiment with outlines and other style properties when creating such datasets and training future models in the context of \ac{ui} widget detection.
-\clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of discussion
 \chapter{Discussion}
+While the results of the model on the synthesized datasets looks promising, they are far from being usable when used on real data. The output models of both final runs were used in a prediction test against design mock-ups of a new \ac{ui} design. This test showcased that the models perform much worse or not at all when faced with unseen complexity in widget style, nested widgets, used symbols and fonts. In the test, both models were not able to properly predict all widgets. The most promising type in those test results was the button, which was not only often correctly identified but also with a much higher confidence than the rest. One has to keep in mind that these proprietary designs are far more advanced than what the generator could provide, which means that that further development and refinement in the generation process would be necessary, in order for the models to deliver better performance. Due to company secrets, it was not possible to showcase those test images in the thesis.\\
+In regards to the stated research questions the viability of the \ac{ml} object detection approach is reasonably possible, but a definitive answer cannot be given as the initial test on a real user interface was a failure. Further development in the created generators is necessary, which will be conducted at the discretion of Schrack Seconet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of content
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of listings
 \clearpage % Beginne neue Seite
@@ -634,45 +704,59 @@ An important factor discovered during the research is the importance of style va
 \chapter*{\listacroname}
 % TODO REMOVE UNUSED ACRONYMS AT THE END OF WRITING
 \begin{acronym}
+    % \acro{api}[API]{Application Programming Interface}
+    % \acro{yoloAlt}[YOLO]{You only live once}
+    % \acro{yolo}[YOLO]{You Only Look Once}
+    % \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
+    % \acro{ui}[UI]{user interface}
+    % \acro{gui}[GUI]{graphical user interface}
+    % \acro{ta}[TA]{test automation}
+    % \acro{sut}[SUT]{system under test}
+    % \acro{json}[JSON]{JavaScript Object Notation}
+    % \acro{cli}[CLI]{Command-line interface}
+    % \acro{mcu}[MCU]{Microcontroller unit}
+    % \acro{led}[LED]{Light Emitting Diode}
+    % \acro{lvgl}[LVGL]{Light and versatile graphics library}
+    % \acro{fas}[FAS]{fire alarm system}
+    % \acro{hcs}[HCS]{health care system}
+    % \acro{ml}[ML]{machine learning}
+    % \acro{hpo}[HPO]{hyper-parameter optimization}
+    % \acro{iou}[IoU]{Intersection over Union}
+    % \acro{map}[mAP]{mean average precision}
+    % \acro{llm}[LLM]{large language model}
+    % \acro{gpt}[GPT]{generative pre-trained transformer}
+    % \acro{cnn}[CNN]{Convolutional Neural Network}
+    % \acro{vcip}[VCIP]{Visocall IP}
+    % \acro{vgt}[VGT]{visual GUI testing}
     \acro{api}[API]{Application Programming Interface}
-    \acro{yoloAlt}[YOLO]{You only live once}
-    \acro{yolo}[YOLO]{You Only Look Once}
-    \acro{yolo9}[YOLOv9]{YOLO version 9 by ultralytics}
-    \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
-    \acro{yolo3}[YOLOv3]{YOLO version 3 by Joseph Redmon}
-    \acro{ui}[UI]{user interface} \acro{gui}[GUI]{graphical user interface}
-    \acro{ta}[TA]{test automation} \acro{sut}[SUT]{system under test}
-    \acro{dut}[DUT]{device under test} \acro{hil}[HiL]{Hardware-in-the-Loop}
-    \acro{sil}[SiL]{Software-in-the-Loop} \acro{pil}[PiL]{Processor-in-the-Loop}
-    \acro{mil}[MiL]{Model-in-the-Loop}
-    \acro{json}[JSON]{JavaScript Object Notation}
     \acro{cli}[CLI]{Command-line interface}
-    \acro{mcu}[MCU]{Microcontroller unit}
-    \acro{rtos}[RTOS]{Real-Time Operating System}
-    \acro{led}[LED]{Light Emitting Diode}
-    \acro{lcd}[LCD]{Liquid Crystal Display}
-    \acro{pwm}[PWM]{Pulse Width Modulator}
-    \acro{iso}[ISO]{International Standards Organization}
-    \acro{lvgl}[LVGL]{Light and versatile graphics library}
-    \acro{Lvgl}[LittlevGL]{Light and versatile graphics library}
+    \acro{cnn}[CNN]{Convolutional Neural Network}
     \acro{fas}[FAS]{fire alarm system}
+    \acro{gpt}[GPT]{generative pre-trained transformer}
+    \acro{gui}[GUI]{graphical user interface}
     \acro{hcs}[HCS]{health care system}
-    \acro{ml}[ML]{machine learning}
-    \acro{mlops}[MLOPS]{machine learning operations}
     \acro{hpo}[HPO]{hyper-parameter optimization}
     \acro{iou}[IoU]{Intersection over Union}
-    \acro{map}[mAP]{mean average precision}
+    \acro{json}[JSON]{JavaScript Object Notation}
+    \acro{led}[LED]{Light Emitting Diode}
     \acro{llm}[LLM]{large language model}
-    \acro{gpt}[GPT]{generative pre-trained transformer}
-    \acro{cnn}[CNN]{Convolutional Neural Network}
+    \acro{lvgl}[LVGL]{Light and versatile graphics library}
+    \acro{map}[mAP]{mean average precision}
+    \acro{mcu}[MCU]{Microcontroller unit}
+    \acro{ml}[ML]{machine learning}
+    \acro{sut}[SUT]{system under test}
+    \acro{ta}[TA]{test automation}
     \acro{vcip}[VCIP]{Visocall IP}
     \acro{vgt}[VGT]{visual GUI testing}
+    \acro{ui}[UI]{user interface}
+    \acro{yoloAlt}[YOLO]{You only live once}
+    \acro{yolo}[YOLO]{You Only Look Once}
+    \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
 \end{acronym}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of listings
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of appendix
-\clearpage
-\appendix
-\chapter{... appendix ...}
-\clearpage
+% \clearpage
+% \appendix
+% \clearpage
 \end{document}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of appendix
