@@ -74,14 +74,15 @@
 %\secondsupervisor[Begutachter]{Titel Vorname Name, Titel}
 %\secondsupervisor[Begutachterinnen]{Titel Vorname Name, Titel}
 
-\place{Wien}
+\place{Vienna}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Danksagung/Kurzfassung/Schlagworte
 % Abstract
-\outline{ Developing and executing test suites on embedded devices with a \ac{gui} can be a time-consuming and exhaustive process. Nevertheless, it is a necessary task in interfaces of critical infrastructure, like \ac{fas} or \ac{hcs} developed at Schrack Seconet. This research analyzes the viability of using machine learning for identifying and detecting \ac{ui} widgets based purely on screenshot data. The analysis is written from the perspective of \ac{ta} performed on critical systems like the aforementioned. The focus is on high performing results due to the qualitative requirements in \ac{ui} test automation of such systems, where upcoming problems during development are considered potentially critical if not detected. \\ During paper development, a \ac{yolo} model was trained on randomly synthesized datasets of \ac{ui} screenshots. The datasets were generated with the \ac{lvgl}, a common and popular library in embedded systems. During development of the datasets and model training processes, key problem factors are identified and potential mitigations addressed. The findings showcase these points in the context of a nurse call system, where reliability of the user interface plays a critical role and margin for error is non-existent. \\ The project follows a Design Science research approach, in which a \ac{ui} generator for \ac{lvgl} was created, that is capable of generating datasets of randomly chosen and placed widgets on a screen, as well as the generation of realistic looking designs by using a system based on a \ac{json} schema. In order to create larger datasets, a \ac{llm} was used to design multiple \ac{ui}s from a list of pre-defined contexts and themes. \\\\ This research aims to reduce time spent in test development and improve test coverage of varied \ac{ui}s in devices of critical systems, while aiding human developers in manual and automated testing. \\ }
+\outline{ Developing and executing test suites on embedded devices with a \ac{gui} can be a time-consuming and exhaustive process. Nevertheless, it is a necessary task in interfaces of critical infrastructure systems, like \ac{fas} or \ac{hcs} developed at Schrack Seconet. This research analyzes the viability of using machine learning for identifying and detecting \ac{ui} widgets based purely on screenshot data. The analysis is written from the perspective of \ac{ta} performed on critical systems like the aforementioned. The focus is on high performing results due to the qualitative requirements in \ac{ui} test automation of such systems, where upcoming problems during development are considered potentially critical if not detected.\\
+During the development of this paper, a \ac{yolo} model was trained on randomly synthesized datasets of \ac{ui} screenshots. The datasets were generated with the \ac{lvgl}, a common and popular library in embedded systems. During development of the datasets and model training processes, key problem factors are identified and potential mitigations addressed. The findings showcase these points in the context of a nurse call system, where reliability of the user interface plays a critical role and margin for error is non-existent. \\ The project follows a Design Science research approach, in which a \ac{ui} generator for \ac{lvgl} was created, that is capable of generating datasets of randomly chosen and placed widgets on a screen, as well as the generation of realistic looking designs by using a system based on a \ac{json} schema. In order to create larger datasets, a \ac{llm} was used to design multiple \ac{ui}s from a list of pre-defined contexts and themes. \\\\ This research aims to reduce time spent in test development and improve test coverage of varied \ac{ui}s in devices of critical systems, while aiding human developers in manual and automated testing. \\ }
 \keywords{YOLOv8, UI Testing, embedded devices, widget detection, widget
 classification, automated testing}
 % Acknowledgements
-\acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience were unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up to this point.}
+\acknowledgements{I extend my gratitude to the faculty and staff at UAS Technikum Vienna for their invaluable guidance and the wealth of knowledge they have shared, which has culminated in the completion of this bachelor thesis. Special appreciation is given to my academic advisor, Dietmar Millinger, for his expertise and dedication. Additional thanks are due to Dietmar Millinger, Karl M. Göschka, Lorenz Froihofer, and Susanne Teschl for their inspiration and exceptional contributions to my understanding of machine learning, computer science, and mathematics, respectively. Thanks should also go to my academic peers, for the collaborative environment fostered on our student community server and the valuable networks we have built throughout this educational journey. I am particularly grateful to my partner, whose support and patience has been unwavering during my academic endeavors at the UAS Technikum Vienna. I would also like to express my sincere thanks to Schrack Seconet AG for providing me with the opportunity to develop this paper in a professional context. The support from colleagues has been instrumental in aligning my academic pursuits with practical applications in the workplace. Lastly, I thank my own body and mind for not breaking apart throughout the long days and mostly nights that were involved up until this point.}
 \setListingsAndAcronyms % Definition der Namen für Quellcodeverzeichnis
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of header
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of document
@@ -91,21 +92,21 @@ classification, automated testing}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of content
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of Introduction
 \chapter{Introduction}
-In embedded systems providing critical infrastructure, it is often mandatory to have well-established and good testing procedures. One such system is nurse call used in hospitals and health care facilities, which consists of devices that allow humans to call for help in situations ranging from mundane \textit{(e.g. requesting patient service)} to life-threatening \textit{(e.g. cardiac arrest alarm)} use-cases. These systems require interfaces for human interaction and such interfaces need to be rigorously tested, to provide feedback on system quality in early stages of development, where the potential for harm is very low. Additionally, automated testing becomes necessary, to reduce possible variation in test execution when compared to manual testing, where human-error is more prevalent than with machines repeating test cases.\\
-However, when such interfaces only consist of a touch display, it can become very challenging to automate, as it requires tools for the machine to analyze the visual image and to interact with the \ac{ui} using stimuli \textit{(e.g. simulated touch)}. The automation gets further complicated, the more inputs and outputs the machine needs to deal with in order to perform a representative human test routine. Once such test routines are established, they need to be continously maintained in order to adapt to changes to the \ac{ui}, otherwise such changes can break the test system and halt the overall development process.\\
+In embedded systems providing critical infrastructure, it is often mandatory to have well-established and high-quality testing procedures. One such system is nurse call used in hospitals and health care facilities, which consists of devices that allow humans to call for help in situations ranging from mundane \textit{(e.g. requesting patient service)} to life-threatening \textit{(e.g. cardiac arrest alarm)} use-cases. These systems require interfaces for human interaction and such interfaces need to be rigorously tested, to provide feedback on system quality in early stages of development, where the potential for harm is very low. Additionally, automated testing becomes necessary, to reduce possible variation in test execution when compared to manual testing, where human-error is more prevalent than with machines repeating test cases.\\
+However, when such interfaces only consist of a touch display, it can become very challenging to automate, as it requires tools for the machine to analyze the visual image and to interact with the \ac{ui} using stimuli \textit{(e.g. simulated touch)}. The automation gets further complicated, the more inputs and outputs the machine needs to deal with in order to perform a representative human test routine. Once such test routines are established, they need to be continously maintained in order to adapt to changes in the \ac{ui}, otherwise such changes can break the test system and halt the overall development process.\\
 This research project will demonstrate a machine learning tool to aid in analyzing images to obtain metadata about the displayed \ac{ui}. The metadata consists of position and size of individual widgets, which then can be used in testing routines for precise functional interactions. By training a model that can detect and classify widgets based on screenshots, the testing routines can adapt to many \ac{ui} arrangements dynamically, which can reduce labor involved for maintenance of test repositories.\\
 Since covering all possible \ac{ui} libraries and frameworks would be tremendous in scope, the research will limit focus on \ac{lvgl} as the basis for the \ac{ui}. It begins by creating an image and annotation generator for \ac{lvgl}, since there is no available dataset for this library specifically and it also allows for targeted adjustments in dataset size, variation and balance of widget types. Furthermore, it allows for validation based on a real world example from the company where the author is employed at. The work will also be limited to a subset of available widget types, to provide a basic baseline for the viability of the tool, which may be easily extended in the future.\\
-Once dataset creation is automated, the paper will demonstrate training based on the \ac{yolo} model and evaluate performance in comparison to human methods. From a testing perspective, this paper is most concerned with the prediction accuracy of the model, since a tool that is not capable of reliable detection will only shift maintenance problems to the tool itself, rather than improving them overall.
+From a testing perspective, this paper is only concerned with the prediction accuracy of the model on \ac{ui} widgets.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of Problem description
 \chapter{Problem description}
-When developing automated test cases for a product which has very long life cycles, due to being incorporated in building infrastructure for 10 years or more, it can be expected that involved maintenance labor of existing test cases surpasses the creation of new test cases. But even in such long-lasting products, big system changes \textit{(e.g. \ac{ui} redesign, new controller architecture, new graphics libraries...)} eventually occur. Such a change incurs a new evaluation and design of existing test procedures, to accommodate for the new system or \ac{ui}, even if the actual use-case and performed steps fundamentally remain the same.
-For the business it is therefor beneficial to have testing tools, which reduce the maintenance costs of such legacy test costs, by being dynamic and adaptable to the given test environment.\\
+When developing automated test cases for a product which has very long life cycles, due to being incorporated in building infrastructure for 10 years or more, it can be expected that involved maintenance labor of existing test cases surpasses the creation of new test cases. But even in such long-lasting products, big system changes \textit{(e.g. \ac{ui} redesign, new controller architecture, new graphics libraries...)} eventually occur. Such changes require a new evaluation and redesign of existing test procedures, to accommodate for the new system or \ac{ui}, even if the actual use-case and performed steps fundamentally remain the same.
+For the business it is therefore beneficial to have testing tools, which reduce the maintenance costs of such legacy test cases, by being dynamic and adaptable to the given test environment.\\
 % THIS PART requires more research in the literature to write a more coherent problem description
 % I DON'T EVEN KNOW IF I NEED THIS PART
 % Such a change incurs a new evaluation and design of existing test procedures, to accommodate for the new system or \ac{ui}, even if the actual use-case and performed steps fundamentally remain the same. The development of a breaking change must then factor in the costs of changing legacy tests and it may result in decisions that will have less test quality as a result, in favor of bringing in more money for the business.\\
-% Therefor it can be beneficial for the tester to make use of tools, which reduce development costs incurred.
+% therefore it can be beneficial for the tester to make use of tools, which reduce development costs incurred.
 % When developing test cases for \aclp{ui}, it is necessary to differentiate between white-box and black-box testing. A white-box testing approach would incorporate knowledge about the code of the \ac{ui}, where a tester would know about the types of widgets used and their applied properties, amongst other things related to the contents of the source. This testing approach is typically used in unit and early integration testing, possibly performed by the developer themselves. In black-box testing, such information is completely stripped away and it is best-practice to leave such work to people outside of the development team to avoid confirmation-bias. % TODO citations for testing approaches, best-practice, etc.
 % The context of this paper focuses on the latter with the limitation, that the author has knowledge of the library used and the hardware product itself. The author is a professional in testing and test automation, aware of the risks involved when it comes to knowledge about inner workings of the system under test. % TODO citation of involved risks due to confirmation bias
 % As such, the main input for the tool will be limited to what is accessible to the tester, which is constrained to be a black-box testing approach.\\
@@ -116,14 +117,15 @@ When it comes to simulation, it marks unit testing of the user interface as an u
 Instead, the developers at Schrack Seconet integrated a low-level kernel \ac{api} into the development firmware of \ac{ui} devices, which allows for simulation of user interactions on the devices, mimicking human behavior on the display. The mimicked behavior includes interactions such as touch, press, release, drag and combined variations of the aforementioned.\\
 However, this approach requires knowledge about the metadata of the \ac{ui} by the test developer, so that the defined interactions are performed on the correct coordinates of the user interface element.\\
 A common example of such a test case using coordinates is visible in Fig.\ref{fig:lock-screen-test-example}, showing a routine which unlocks the screen by swiping.
-\begin{figure}
+\begin{figure}[H]
     \caption{Example of a lock screen test case using absolute coordinates by Schrack Seconet}
     \centering
     \includegraphics[width=\textwidth]{lock-screen-testcase.jpg}
     \label{fig:lock-screen-test-example}
-\end{figure}\\
-Expected functionality of the device is then assessed by aggregation of device logging data, verification of expected signal states from accessible hardware outputs. These outputs typically are \acp{led} on the test device itself or other interconnected devices in the distributed system, which are connected through proprietary IP-based protocols or other proprietary hardware bus technologies employed by the Schrack Seconet system. In addition to these expectations, the raw frame buffer of the controller can be exported to the test machine, which will also depict any visual errors, as long as the error occurred in firmware and not during transmission to the display driver. An example of such a visual error is depicted in Fig.\ref{fig:visual-error-example-screendump}.
-\begin{figure}
+\end{figure}
+\noindent
+The expected functionality of the device is then assessed by aggregating device log data and verification of expected signal states from accessible hardware outputs. These outputs typically are \acp{led} on the test device itself or other interconnected devices in the distributed system, which are connected through proprietary IP-based protocols or other proprietary hardware bus technologies employed by the Schrack Seconet system. In addition to these expectations, the raw frame buffer of the controller can be exported to the test machine, which will also depict any visual errors, as long as the error occurred in firmware and not during transmission to the display driver. An example of such a visual error is depicted in Fig.\ref{fig:visual-error-example-screendump}, which shows display errors for system time in the upper right and also the font symbols, for an informative text on how to unlock the screen below the icon, are not displayed properly.
+\begin{figure}[H]
     \caption{Example of a visual error on the lock screen of a \ac{vcip} product in development}
     \centering
     \includegraphics[height=0.25\textheight]{screen_dump_error.png}
@@ -140,7 +142,7 @@ This approach comes with a caveat, as the hard-coded metadata is bound to become
 \\
 Another perspective on the current approach is the existing dependency on manual testing, since the described test method does not involve visual verification. The existing test automation can reliably assess the correct execution of functions in the system, but is incapable of finding errors that exist in the displayed image and animation on the device itself. The visual aspect of the \ac{ui} plays an important in nurse call systems, since it involves multiple languages for text, standards for visual and acoustic signalization described in the VDE-0834 \autocite{DINVDE08341}, and also the visual prioritization of emergency calls.
 \\
-Making use of the aforementioned screen dumps to assess these visual aspects would be a valid approach, but this has not been done so far and through this paper the development on a solution began. This visual verification however would still not account for errors that happen between transmission from the \ac{mcu} frame buffer to the display driver chip, but that is a negligible error source.
+Making use of the aforementioned screen dumps to assess these visual aspects would be a valid approach, but this has not been implemented so far. The development of a solution began through this paper. This visual verification however would still not account for errors that happen between transmission from the \ac{mcu} frame buffer to the display driver chip, but that is a negligible error source.
 \\
 A solution, which is capable of dealing with the dynamic nature of user interfaces, visual verification and future \ac{ui} development changes is highly sought after in the company. Computer vision and machine learning is assumed to be a promising approach for the purpose of reducing the cost and time involved in manual and automatic testing of these user interfaces.
 \clearpage
@@ -150,9 +152,10 @@ A solution, which is capable of dealing with the dynamic nature of user interfac
     \item \textbf{Is YOLOv8 a viable model for detecting \ac{lvgl} widgets based on screenshots?}\\
     In order for a model to be viable in widget detection for the previously stated problem context of test automation, it would need to have a high prediction confidence with accurate results. If the selected model fails to perform well, it will only bring rise to many false-positives when performing test routines, ultimately failing adoption and qualitative trust in the tool. The exact target accuracy to overcome was not possible to determine, as humans can make errors in writing coordinates and given how minor these incidents are, they are generally not documented. But given the critical context of the \ac{sut} a general approximation of minimum 80\% confidence and accuracy seems like a fair target. This number was chosen out of experience, as the remaining 20\% error margin would be manageable with review processes of the model output, as it is already the case for test case development.
     \item \textbf{Can \ac{ml} be a viable tool in aiding test developers through automatic widget localization?}\\
-    In order for the \ac{ml} tool to properly aid the developer, it would need to make the general test development process faster and provide automation. Since the purpose of the tool is to provide coordinate metadata and the current process involves acquiring this information manually per single image, it would already be viable enough if the tool could automate this behaviour over a given set of images and return the desired coordinates. An additional step could also take care of integrating the detection into test routines themselves and performing the localization live, however that integration is out-of-scope for the paper itself.
+    In order for the \ac{ml} tool to properly aid the developer, it would need to make the general test development process faster and provide automation. Since the purpose of the tool is to provide coordinate metadata and the current process involves acquiring this information manually per single image, it would already be viable enough if the tool could automate this behaviour over a given set of images and return the desired coordinates.
+    %An additional step could also take care of integrating the detection into test routines themselves and performing the localization live, however that integration is out-of-scope for the paper itself.
 \end{itemize}
-It was considered to answer these questions for the ongoing development of a new \ac{ui} design at the company, however the release planning and starting time for that development did not correlate well with the thesis deadline. The answers to these questions will therefor be written based on the results of the synthesized data.
+It was considered to answer these questions for the ongoing development of a new \ac{ui} design at the company, however the release planning and starting time for that development did not correlate well with the thesis deadline. The answers to these questions will thereforee be written based on the results of the synthesized data.
 \clearpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of literature & theory
 \chapter{Existing literature and theoretical basis}
@@ -190,18 +193,19 @@ Further details about the architecture can be determined through the open-source
 \end{figure}
 \clearpage
 \hidsection{\acf{lvgl}}
+\noindent
 This graphics library \autocite{LVGLLightVersatile} is a popular choice amongst embedded system engineers and has seen much usage, due to its portable support for a wide range of target architectures and devices. Its performance works well in resource constrained systems.\\
-The library is generally very flexible, providing a rich set of widget types \autocite{WidgetsLVGLDocumentation} and layout systems (flex, grid), which allow developers to create complex and custom \ac{ui}. Fig.\ref{fig:lvgl-musicplayer-demo} and Fig.\ref{fig:lvgl-printer-demo} showcase some of the \ac{ui} capabilities of the library, with more available on their web page \autocite{llcLiveDemosTest}.\\
-\begin{figure}
+The library is generally very flexible, providing a rich set of widget types \autocite{WidgetsLVGLDocumentation} and layout systems (flex, grid), which allow developers to create complex and custom \ac{ui}. Fig.\ref{fig:lvgl-musicplayer-demo} and Fig.\ref{fig:lvgl-printer-demo} showcase some of the \ac{ui} capabilities of the library, with more available on their web page \autocite{llcLiveDemosTest}.
+\begin{figure}[H]
     \caption{\ac{lvgl} music player demo \autocite{llcLiveDemosTest}}
     \centering
-    \includegraphics[height=0.2\textheight]{lvgl-musicplayer-demo.png}
+    \includegraphics[height=0.3\textheight]{lvgl-musicplayer-demo.png}
     \label{fig:lvgl-musicplayer-demo}
 \end{figure}
-\begin{figure}
+\begin{figure}[H]
     \caption{\ac{lvgl} printer demo \autocite{llcLiveDemosTest}}
     \centering
-    \includegraphics[height=0.2\textheight]{lvgl-printer-demo.png}
+    \includegraphics[height=0.3\textheight]{lvgl-printer-demo.png}
     \label{fig:lvgl-printer-demo}
 \end{figure}
 \clearpage
@@ -212,7 +216,7 @@ This is why a generator must be built, which is capable of creating and placing 
 In order to create variety in individual widgets, a randomized approach is used, where the outputted widgets will have varying styles applied to them. To gain more fine-control on the final visual representation of an created \ac{ui}, an additional design mode is necessary, where the creation of user interfaces can be statically described. The design mode will allow for creation of realistically looking \acp{ui}, while the random mode will allow for the creation of varying visual representation of the individual widgets.\\
 Since the creation of a window in the generation process is singular, it will be necessary to have a mechanism to repeatedly call the generator to obtain a new image with each iteration. Using a modular approach, this paper will separate the generator, capable of producing a single image with annotations, from the so-called randomizer, which will loop the generator repeatedly for an arbitrary amount of iterations. This approach allows for a focused implementation that is capable of producing a good singular image, while having a secondary implementation that solely focuses on the organisation and creation of the dataset. Additionally, when written in the modular approach, it also allows for separation of concerns, where the generator will only need to deal with the intricacies of the \ac{lvgl} \ac{api}, while the randomizer can focus on the structural requirements of the dataset for the chosen model.\\
 \section{First generator version in C}
-The initial generator (v1) is forked from the existing VSCode simulator project of \ac{lvgl}.\autocite{LvglLv_port_pc_vscode2024} The simulator was stripped from any demo code and re-used as a binary with \ac{cli} arguments. For proper operation, the \code{lv\_conf.h} file was also modified, to increase allocation memory and deactivate unnecessary features. In the configuration, the default color depth was also modified to be 24 bit, so that output images would appear in higher quality. To be able to store screenshots, an additional library named \code{lv\_100ask\_screenshot} was used,\autocite{100askTeamLv_lib_100ask2024} which deals with the proper JPEG encoding using a \code{tiny\_jpeg} library internally.\\
+The initial generator (v1) is forked from the existing VSCode simulator project of \ac{lvgl}.\autocite{LvglLv_port_pc_vscode2024} The simulator was stripped from any demo code and reused as a binary with \ac{cli} arguments. For proper operation, the \code{lv\_conf.h} file was also modified, to increase memory allocation and deactivate unnecessary features. In the configuration, the default color depth was also modified to be 24 bit, so that output images would appear in higher quality. To be able to store screenshots, an additional library named \code{lv\_100ask\_screenshot} was used,\autocite{100askTeamLv_lib_100ask2024} which deals with the proper JPEG encoding using a \code{tiny\_jpeg} library internally.\\
 Since the generator uses the allocation and storage mechanisms provided by \ac{lvgl}, it is necessary to use an identifier for the target storage system as prefix to the output filename. For this the \code{\textbackslash} character was chosen, so when supplying the \ac{cli} with a desired output filename, an example argument would look like this: \code{\textbackslash screenshot.jpg}\\
 The following usage information will explain the available console arguments for this generator version:
 \begin{listing}[htbp]
@@ -252,7 +256,7 @@ The layout structuring of widgets helped in outputting more placement variation 
 \subsection{Development issues}
 During development and testing of the first generator, it became apparent, that implementing further widget types would create a lot of complexity due to parameter passing in code. Since the C language does not inherently have classes, it was considered to be much more difficult to implement multiple widget types, each of which require a different set of options to be displayed properly.\\
 Additionally, issues like segmentation faults due to window deletion occurred, which were inherited from the forked project. The implementation of a design mode was attempted, but this only increased complexity, which resulted in more unreliability of the program, despite the authors experience in the language. Frequent errors in compilation as well as a high compilation time due to the included \ac{lvgl} examples, which the author was not able to remove, were halting and slowing down development time. A lot of features \textit{(widget styles and states, widget property randomization, ...)} were still left to be implemented at a low level and C being a systems programming language, it was becoming too big of a problem for the project.\\\\
-The general implementation based on C proved to be much more error-prone as a result of these issues and was therefor considered too complex for usage in a generation pipeline. A new solution was sought after, which would allow implementation of the generator in a more resilient and forgiving programming language.\\
+The general implementation based on C proved to be much more error-prone as a result of these issues and was therefore considered too complex for usage in a generation pipeline. A new solution was sought after, which would allow implementation of the generator in a more resilient and forgiving programming language.\\
 \ac{lvgl} provides C bindings \autocite{LvglLv_binding_micropythonLVGL} for usage and implementation in other programming languages. A language promoted by the creators themselves is micropython \autocite{LvglLv_micropythonMicropython}, which is a reduced implementation of python for running on hardware. While the issues faced with the initial generator certainly are solvable, there existed no premise to continue in the C language. A new version in that language was considered to be a simpler approach that would refocus the project on the dataset creation matter at hand.
 \clearpage
 \section{Second generator version in Micropython}
@@ -321,14 +325,16 @@ dropdown 0.128125 0.7375 0.203125 0.0625
 \end{listing}
 \clearpage
 \hidsubsubsection{Distorted output images due to render race conditions}
-The used snapshot \ac{api} sometimes causes output issues, since race-conditions can occur due to render updates while the referenced image data is still being encoded, resulting in distorted or sheared images as seen in the example Fig.\ref{fig:genv2distortedexample}. This largely originates from adding the JPEG encoding in micropython, which inherently is much slower than its C counterpart. While the issue was not solved during paper development due to its late discovery, a problem solution using a compiled C module of the latest libjpeg-turbo \autocite{LibjpegturboLibjpegturbo2024} version was discussed in development forums of \ac{lvgl} \autocite{HowCanStore2024}. Adding this module will improve encoding speed and thus not face race conditions due to underlying render updates by \ac{lvgl}. Images which had this issue needed to be regenerated and datasets were fixed manually.
-\begin{figure}
+\noindent
+The used snapshot \ac{api} sometimes causes output issues, since race-conditions can occur due to render updates while the referenced image data is still being encoded, resulting in distorted or sheared images as seen in the example Fig.\ref{fig:genv2distortedexample}. This largely originates from adding the JPEG encoding in micropython, which inherently is much slower than its C counterpart. The issue was discovered very late in paper development and a problem solution using a compiled C module of the latest libjpeg-turbo \autocite{LibjpegturboLibjpegturbo2024} version was discussed in development forums of \ac{lvgl} \autocite{HowCanStore2024}. Adding this module improved encoding speed, but the faced race conditions due to underlying render updates by \ac{lvgl} still occurred. Images which had this issue needed to be regenerated and datasets were fixed manually.
+\begin{figure}[H]
     \caption{Example image with distortions from generator v2 (640x640)}
     \centering
     \includegraphics[height=0.4\textheight]{distorted_image_example.jpg}
     \label{fig:genv2distortedexample}
 \end{figure}\\
 \hidsubsubsection{Memory allocation errors}
+\noindent
 Since the image encoding takes place in micropython, it actually takes up a lot more memory in heap. When creating and encoding images with the generator, it may result in memory allocation errors, depending on available memory on the running machine. This issue is not solved in the final generator version of the paper and was circumvented by retry mechanisms when creating image files using the dataset pipeline.
 \newpage
 \section{Random mode}
@@ -364,7 +370,7 @@ optional args:
     \label{code:genv2usage}
 \end{listing}
 \subsection{Style and state variation}
-When using random mode, the generator will randomize applied style of widgets to artificially create variation in created datasets. Additionally, there is an experimental feature, which will also randomize the state of widgets. The latter is not recommended for usage in training, as sometimes this might cause widgets to not be displayed if their state is invalid or disabled, which will confuse the model, as the created metadata will still include the annotation of said widget.\\
+When using random mode, the generator will randomize the applied style of widgets to artificially create variation in created datasets. Additionally, there is an experimental feature, which will also randomize the state of widgets. The latter is not recommended for usage in training, as sometimes this might cause widgets to not be displayed if their state is invalid or disabled, which will confuse the model, as the created metadata will still include the annotation of said widget.\\
 Listing \ref{code:randomized-properties} shows the properties and their range of possible values to be randomized. Listing \ref{code:randomized-state} shows the available states.
 \begin{listing}[htbp]
     \begin{minted}[
@@ -440,11 +446,10 @@ def randomize_state(widget: lv.obj):
     \caption{Available state properties which are randomized in given options}
     \label{code:randomized-state}
 \end{listing}
-\clearpage
 \section{Design mode}
 In design mode, the generator will parse a provided \ac{json} file and create a \ac{ui} according to the specified design. This mode allows for creation of a static \ac{ui} design, which more resembles the expectation of a realistic interface in comparison to the random mode. To allow for variation in this mode, a special type \code{random} is available, which randomly chooses widgets from a given type list and randomizes their appearance. This option is similar to random mode and allows for randomization in specific portions of the \ac{ui}, while keeping the rest statically defined. In the design file, various styles can be defined. Multiple styles can then be applied to individual widgets and containers by name reference. In general, all possible \textit{setter} properties of \ac{lvgl} styles are allowed, as the implementation checks for the availability of the corresponding setter attribute on a \code{lv.style\_t} object.\\
 Since the design mode only requires a single parameter \textit{(i.e. the path to the design file)}, no further usage instructions are provided in this paper.
-\hidsubsection{Design file rules}
+\hidsubsection{The design file rules}
 The creation of design files require a certain set of rules that need to be followed, in order for the creation to work properly.
 \begin{enumerate}
     \item It is mandatory that the first widget object in \code{root} is a container, as the root widget is always a container.
@@ -516,12 +521,13 @@ The produced annotations in each iteration are post-processed before they are mo
 \end{figure}
 \clearpage
 \subsection{Design contexts and themes}
-Since creation of a large design dataset would additionally require the labor-intensive manual definition of a large set of designs, it was decided to use a \ac{llm} which would handle the creation of those design files. For that purpose, a list of 100x contexts and 100x themes was created. By unique pair combination, this creates a possible list of 10000 design contexts and themes to be provided to the \ac{llm}.\\
+Since creation of a large design dataset would additionally require the labor-intensive manual definition of a large set of designs, it was decided to use a \ac{llm} which would handle the creation of those design files. For that purpose, a list of 100x contexts and 100x themes was created. By unique pair combination, this creates a possible list of 10000 design contexts and themes to be provided to the \ac{llm}. In the thesis, it was decided to use gpt-4-turbo as the \ac{llm}, as it provided the easiest \ac{api} to use and is generally known for its good performance.\\
 As illustrated in Fig.\ref{fig:dataset-creation-design}, the \ac{llm} would first be instructed to write out a design idea in the provided \ac{ui} context and style theme. Via a system prompt, the model is instructed to include the widgets to be used in the design, a high-level description of the \ac{ui} purpose and a structural description of what the \ac{ui} shall look like.\\
 The idea output is then again fed into the \ac{llm} in a separate context and instructed to output a valid \ac{json} file. It additionally receives the \ac{json} schema as guidance on how to structure and construct the output \ac{json}. The resulting output of the model is then validated against the schema and any validation errors are fed back to the \ac{llm} for correction. Once an output design is valid, it will be stored and added to a design file list, to be generated in a following step. This loop can be repeated for a desired amount of design files, for up to 10000 generations, given our combination list of contexts and themes.
 \subsection{Third-party integration} % ClearML & LLM (ChatGPT)
 The dataset creation process relies heavily on third-party integration. To track individual versions of datasets, a popular experiment tracker named ClearML was used. In order to automate the design file creation process, the proprietary \ac{llm} named ChatGPT was used via OpenAIs available python package and \ac{api}.
 \hidsubsubsection{Integration with ClearML}
+\noindent
 Whenever a dataset creation starts, a new ClearML task is created and used for generating statistics about the process. The task stores all of the following information:
 \begin{itemize}
     \item Console output of the script
@@ -534,6 +540,7 @@ Whenever a dataset creation starts, a new ClearML task is created and used for g
 \end{itemize}
 All of that surrounding information regarding the creation process helps in getting a better understanding about errors and quality of the created dataset.
 \hidsubsubsection{Integration with LLM (gpt-4-turbo)}
+\noindent
 In order to generate design files at a larger scope, OpenAIs gpt-4-turbo model was used in the dataset creation process when using the design mode of generator v2. In order for the model to properly behave and generate usable output, the \ac{gpt} was instructed via system prompts.
 The prompt was designed, so that the format of the idea is structurally similar through each iteration and proper output from the \ac{json} generation step can be expected. The used system prompt for the design \ac{json} can be seen in Listing \ref{code:gpt4-design-json-system-prompt}. Due to their length, the system prompt for the design idea and corresponding examples are omitted from the paper, but can be viewed in the source code repository \autocite{UidetectorSrcGenerate}.
 \begin{listing}[htbp]
@@ -564,11 +571,13 @@ You ALSO MUST adhere to the following SPECIAL RULES:
     \label{code:gpt4-design-json-system-prompt}
 \end{listing}
 \hidsubsection{Randomizer script}
+\noindent
 In order to provide a randomizer script which does not rely on third-party integration, an extra module was created. The repository \autocite{HackXItUi_randomizer14d441c38a37850f4809471124bea3c36b9bc0b7} contains scripts for calling both generator versions. These scripts also repeatedly call the generator and allow for manual dataset creation, without necessity of additional third-party services. An optional mechanism to upload the created dataset to ClearML afterwards, if desired by the user, is implemented in v2.
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of model training
 \chapter{Training of YOLO model}
-The training process illustrated in Fig.\ref{fig:yolo-train} uses the already built training mechanisms of ultralytics \autocite{jocherUltralyticsYOLO2023} \ac{yolo} model version 8.1 \autocite{UltralyticsUltralyticsV8}. All experiments of the paper were performed using this model version and the specific python package version used was 8.1.47.
+The training process illustrated in Fig.\ref{fig:yolo-train} uses the already built training mechanisms of ultralytics \autocite{jocherUltralyticsYOLO2023} \ac{yolo} model version 8.1 \autocite{UltralyticsUltralyticsV8}. All experiments of the paper were performed using this model version and the specific python package version used was 8.1.47.\\
+The model was trained on the detection and localization of widgets, to determine their bounding boxes. Through the bounding boxes, the model provides the necessary metadata for coordinates of widgets on a given screenshot.
 \begin{figure}[!htbp]
     \caption{YOLOv8 model training process}
     \centering
@@ -578,17 +587,24 @@ The training process illustrated in Fig.\ref{fig:yolo-train} uses the already bu
 \section{Training tasks in ClearML}
 Every training process of a \ac{yolo} model is automatically tracked via the existing integration of ClearML in the ultralytics \ac{yolo} engine. This was a crucial step in the creation of reproducible results, since all hyper-parameters of the training process are stored and the used dataset is referenced by a unique ID. This also allows for later modification of a training process, by cloning of the training task and manual editing of parameters in the cloned task.
 \subsection{Training agents on local and remote machines}
-In order to train models remotely on a more powerful machine than the authors laptop, a ClearML agent was setup using Google Colab. The creators of ClearML provide a simple mechanism and already defined notebook \autocite{ClearMLAgentGoogle} for starting such an agent. By having this agent readily available, any local or previously started training tasks could be remotely executed. The built integration uses docker containers to execute individual tasks and execution was therefor immutable once finalized. Such an agent was also started on the local machine of the author, to compare results between the two machines and for debugging purposes of the pipeline itself.
+In order to train models remotely on a more powerful machine than the authors laptop, a ClearML agent was setup using Google Colab. The creators of ClearML provide a simple mechanism and already defined notebook \autocite{ClearMLAgentGoogle} for starting such an agent. By having this agent readily available, any local or previously started training tasks could be remotely executed. The built integration uses docker containers to execute individual tasks and execution was therefore immutable once finalized. Such an agent was also started on the local machine of the author, to compare results between the two machines and for debugging purposes of the pipeline itself.
 \section{Tuning for best hyperparameters}
 In order to optimize the training process for a given dataset to determine the best set of hyper-parameters, the existing tuning process from the ultralytics engine \autocite{ultralyticsTuner} is used. This tuning process has automatic optimization features, choosing different optimizer algorithms for different epochs.
 \section{Hyperparameter optimization}
 The tune process by ultralytics was not always best for producing results. In some cases, the process failed to record the output model weights, despite reporting good results, which led to the creation of a custom \ac{hpo} pipeline.\\
-ClearML offers mechanisms for performing \ac{hpo} \autocite{HyperparameterOptimizationClearML} on previously executed training tasks. For the optimization of parameters, the Optuna optimizer \autocite{OptunaHyperparameterOptimization} is used, which offers an algorithm to optimize for a given metric using either discrete value ranges or a defined set of scalar values. The open-source optimizer implementation would then determine the best hyper-parameters for the training task by running it multiple times with a different set of parameters determined by the algorithm, while tracking the target performance metrics. In all \ac{hpo} processes performed, the configured target metric was the \ac{map}, which shows the model performance across different levels of detection difficulty. The \ac{yolo} training process provides two \ac{map} metrics:
+ClearML offers mechanisms for performing \ac{hpo} \autocite{HyperparameterOptimizationClearML} on previously executed training tasks. For the optimization of parameters, the Optuna optimizer \autocite{OptunaHyperparameterOptimization} is used, which offers an algorithm to optimize for a given metric using either discrete value ranges or a defined set of scalar values. The open-source optimizer implementation would then determine the best hyper-parameters for the training task by running it multiple times with a different set of parameters determined by the algorithm, while tracking the target performance metrics. In all \ac{hpo} processes performed, the configured target metric was the \ac{map}, which shows the model performance across different levels of detection difficulty. The result of this can be seen in Table \ref{tab:overall-training-results}. The author chose the \ac{map}50-95 metric, as it provided a more comprehensive view of the models performance, which was representative of an overall better accuracy and recall.
+\hidsubsection{Explanation of \ac{map} metric}\label{map-explanation}
+\noindent
+The \ac{yolo} training process provides two \ac{map} metrics:
 \begin{itemize}
     \item \ac{map}50 - Mean Average Precision at 50\% \ac{iou} threshold
     \item \ac{map}50-95 - Mean Average Precision averaged over \ac{iou} thresholds from 50\% to 95\% (at 5\% steps)
 \end{itemize}
-The author chose the \ac{map}50-95 metric, as it provided a more comprehensive view of the models performance, which was representative of an overall better accuracy and recall.
+This value measures the accuracy of a model in detecting and localizing objects within an image. The value is calculated by evaluating the precision and recall of the model across different confidence thresholds and \ac{iou} thresholds.\\
+Precision measures the accuracy of the positive predictions made by the model. It is the ratio of true positive predictions to the total number of positive prediction (total of both true positives and false positives). A high value in precision indicates that the model makes very few false positive errors, meaning the actual predicted instances are actually positive.\\
+Recall (otherwise known as sensitivity) measures the model's ability to correctly identify all positive instances. It is the ratio of true positive predictions to the total number of actual positive instances (total of both true positives and false positives). A high recall value indicates that the model makes very few false negative errors, meaning it correctly identifies most of the actual positive instances.\\
+There exists a trade-off between those metrics, as an increase in precision can lead to a decrease in recall and vice versa. An increased threshold for classifying a positive prediction (i.e. to reduce false positives) might exclude some true positives, which reduces recall. This is illustrated in the precision-recall curve and the area under this curve (average precision) can be used to summarize the model's performance across different thresholds.\\
+The \ac{map}@50 refers to the mean average precision calculated at the \ac{iou} threshold of 50\%. The mean is the average precision across all classes. The \ac{map}@50-95 provides a more comprehensive evaluation, as it calculates the mean average precision across multiple thresholds in 5\% increments, starting from 50\% up to 95\%.
 \section{Note on ClearML pipelines}
 The author calls the implementations in the UI detector repository pipelines, even though they are simply python scripts with a \ac{cli}. They are however implemented in the recommended pattern \autocite{PipelineDecoratorClearML} that would later allow these individual scripts to be adapted to pipelines. This is also the reason that all imports that a function requires are located in the corresponding function body and not the top of the script. Pipelines were however not used during paper development, as they require a bit more implementation to work properly and it was considered out-of-scope for this paper to do so.
 \clearpage
@@ -597,90 +613,109 @@ The author calls the implementations in the UI detector repository pipelines, ev
 The final project resulted in the creation of a custom dataset generator capable of producing \ac{ui} screenshot images with corresponding widget annotations. It provides two modes of operation, which can be used to create datasets of varying image sizes, styling properties and used widget types.
 In addition to that, a \ac{json} design parser was written, which converts a design specification written in accordance to a \ac{json} schema into an image representing a realistically looking \ac{ui}. Multiple pipelines with integration to ClearML were written, to aid in dataset generation, \ac{yolo} model training and \acf{hpo}.
 \section{Model performance}
-The created generators were used in the research to train a baseline model based on a random dataset. The performance of this baseline model showed such good results, that the author doubted the viability in real-world scenarios, since the resulting metric scores showcased a form of over-optimization for the case of detecting widget types on a white background.\\
+The created generators were used in the research to train a baseline model based on a random dataset. The performance of this baseline model showed such good results, that the author doubted the viability in real-world scenarios, since the resulting metric scores showcased a form of over-optimization for the case of detecting isolated widget types on a white background.\\
 In response to that, another dataset using the implemented design mode was created with the help of an \ac{llm} to produce the necessary design files. The main purpose of the design mode is to create more realistic looking \acp{ui}, with an overall theme applied in the form of styles, which got rid of the white background and allowed the widgets to blend in more within the window.\\
-The improved model was trained on the generated design dataset and shows a decrease in performance when compared to the baseline model. The drop in performance is attributed to the increased difficulty for the model when detecting widgets on colored and styled backgrounds, which slightly blends the visible features of individual widgets with their surroundings, making them harder to detect.\\
-\begin{table}[]
+The improved model was trained on the generated design dataset and shows a decrease in performance when compared to the baseline model. The drop in performance is attributed to the increased difficulty for the model when detecting widgets on colored and styled backgrounds, which slightly blends the visible features of individual widgets with their surroundings, making them harder to detect.
+\begin{table}[H]
     \centering
     \begin{tabular}{c|c|c|c|c}
-         Dataset & mAP50 & mAP50-95 & fitness & model\_variant \\
-         Train (random) & 0.95312 & 0.86023 & 0.86952 & yolov8n \\
-         Train (design) & 0.77673 & 0.74507 & 0.74824 & yolov8n
+         Dataset & mAP50 & mAP50-95 & model\_variant \\
+         Train (random) & \textbf{0.95312} & \textbf{0.86023} & yolov8n \\
+         Train (design) & 0.77673 & 0.74507 & yolov8n
     \end{tabular}
     \caption{Training results with random \& design dataset}
     \label{tab:overall-training-results}
-\end{table}\\
-Visualizations of training results for the random dataset are depicted in Fig.\ref{fig:random-training-results},\ref{fig:random-training-confusion},\ref{fig:random-training-labels} and \ref{fig:random-training-f1}.\\
-\begin{figure}
+\end{table}
+\noindent
+The results show the mean average precision of the model over all widget classes. The calculation of this value is described in section \ref{map-explanation}.
+Visualizations of training results for the random dataset are depicted in Fig.\ref{fig:random-training-results},\ref{fig:random-training-confusion},\ref{fig:random-training-labels} and \ref{fig:random-training-f1}.
+Further training visualizations for the design dataset are depicted in Fig.\ref{fig:design-training-results},\ref{fig:design-training-confusion},\ref{fig:design-training-labels} and \ref{fig:design-training-f1}. They are interpreted and described in the following section \ref{result-interpretation}
+\subsection{Interpretation of performance results}\label{result-interpretation}
+In both trained models the training results show an increase in the \ac{map} value over the whole process. The random model results (Fig.\ref{fig:random-training-results}) generally show good performance with little variation, meaning the model gets more confident over time. This behaviour is to be expected, since the random dataset contains images of best-case scenarios where individual widgets are isolated in position and their characteristics are more easily differentiated.
+\begin{figure}[H]
     \caption{Random dataset training - results}
     \centering
     \includegraphics[width=\textwidth]{PICs/train371/results.png}
     \label{fig:random-training-results}
 \end{figure}
-\begin{figure}
-    \caption{Random dataset training - confusion matrix (normalized)}
-    \centering
-    \includegraphics[width=\textwidth]{PICs/train371/confusion_matrix_normalized.png}
-    \label{fig:random-training-confusion}
-\end{figure}
-\begin{figure}
-    \caption{Random dataset training - label distribution}
-    \centering
-    \includegraphics[width=\textwidth]{PICs/train371/labels.jpg}
-    \label{fig:random-training-labels}
-\end{figure}
-\begin{figure}
-    \caption{Random dataset training - F1 curve}
-    \centering
-    \includegraphics[width=\textwidth]{PICs/train371/F1_curve.png}
-    \label{fig:random-training-f1}
-\end{figure}
-Further training visualizations for the design dataset are depicted in Fig.\ref{fig:design-training-results},\ref{fig:design-training-confusion},\ref{fig:design-training-labels} and \ref{fig:design-training-f1}.
-\begin{figure}
+\noindent
+This is not the case for the design model results (Fig.\ref{fig:design-training-results}), as it shows trouble of properly identifying widgets over time, visible in the big bounces of the precision and recall values even at higher epochs.
+\begin{figure}[H]
     \caption{Design dataset training - results}
     \centering
     \includegraphics[width=\textwidth]{PICs/train373/results.png}
     \label{fig:design-training-results}
 \end{figure}
-\begin{figure}
+\noindent
+The confusion matrix showcases the model's predictions compared to the actual labels. A good performing model will show a diagonal line across the table, meaning the model is capable of predicting the correct classes in the true positive cases. If the model makes mistakes, the table will show the confusion of a predicted label versus what the label actually should have been. The normalized version of the table shows this value in a range of 0 to 1, instead of the actual amount of predictions.\\
+In our random dataset, we see that the model performs well and predicts the correct label in most cases (Fig.\ref{fig:random-training-confusion}). The confusion is mostly with the background of the image, meaning there was no class to predict in that part of the image.
+\begin{figure}[H]
+    \caption{Random dataset training - confusion matrix (normalized)}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/confusion_matrix_normalized.png}
+    \label{fig:random-training-confusion}
+\end{figure}
+\noindent
+This is not the case in the model trained on the design dataset, as it predicts wrong labels for some classes. Due to the under-representation or missing of certain classes in the dataset, this behaviour can be expected. It means we require a generally bigger dataset with more balance.
+\begin{figure}[H]
     \caption{Design dataset training - confusion matrix (normalized)}
     \centering
     \includegraphics[width=\textwidth]{PICs/train373/confusion_matrix_normalized.png}
     \label{fig:design-training-confusion}
 \end{figure}
-\begin{figure}
+\noindent
+In Fig.\ref{fig:random-training-labels}, the distribution of labels (upper-left) in the random dataset can be seen, which shows a general good balance across all classes with the exception of the textarea. This widget often got placed out-of-bounds, resulting in the removal of the label and thus is under-represented in comparison. The visualization further shows the distribution of bounding boxes (upper-right) and their size in comparison to different classes. The object location scatter plot (lower-left) represents the locations of widgets within the image dataset. The x and y correspond to the normalized coordinates of the object centers within the image. It showcases if widgets tend to cluster in certain regions or are evenly distributed in spatial position. For the random dataset, it illustrates that the random absolute positioning produces a mostly even distribution in placement. The scatter plot of object sizes (lower-right) shows the distribution of object sizes in terms of their width and height, which are also normalized. Each point represents the size of an object and showcases if the dataset contains a wide range of object sizes or if they have a tendency of similar dimensions. It showcases, that in the random dataset the size of widgets are clustering. This is to be expected, as size variation is not implemented and has need for improvement.
+\begin{figure}[H]
+    \caption{Random dataset training - label distribution}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/labels.jpg}
+    \label{fig:random-training-labels}
+\end{figure}
+\noindent
+For the design dataset, the distribution (Fig.\ref{fig:design-training-labels} is not as good. An improvement of the design generation process with the \ac{llm} is required, to better enforce certain classes to be used. More balance is required, which means the \ac{llm} needs to be informed to not over-use certain types. The removal of types from the prompt once a threshold is met could improve the dataset creation output. It also showcases, that widgets are positioned in a more structural approach, as the position scatter plot forms a line in various columns. The sizes of widgets and their bounding boxes are better distributed in the design dataset than in the random dataset, since variation in size was possible for the design generation process.
+\begin{figure}[H]
     \caption{Design dataset training - label distribution}
     \centering
     \includegraphics[width=\textwidth]{PICs/train373/labels.jpg}
     \label{fig:design-training-labels}
 \end{figure}
-\begin{figure}
+\noindent
+Another metric is the F1 score, which calculates the harmonic mean of precision and recall. It better represents model performance in imbalanced datasets. The metric can showcase the balance of class distribution and corresponding prediction confidence. Additionally, the F1 score can showcase which class types result in a decrease of the \ac{map} value.\\
+For the random dataset (Fig.\ref{fig:random-training-f1}) it shows an overall good confidence in widget types. Bad results originate from the under-represented text area, as well as some other types (e.g. roller, spinbox, table). The confidence curve indicates that these widget types need to be improved in the generator, so that their representation is better identified and differentiated from other types. The curve also shows, that widgets like arc, button, buttonmatrix and more work very well for the model, indicating that usage of those types more likely yields good results for the purpose of automating widget detection in a test automation process.
+\begin{figure}[H]
+    \caption{Random dataset training - F1 curve}
+    \centering
+    \includegraphics[width=\textwidth]{PICs/train371/F1_curve.png}
+    \label{fig:random-training-f1}
+\end{figure}
+\noindent
+The curve (Fig.\ref{fig:design-training-f1}) of the model trained on the design dataset is much lower in the harmonic mean. This can be attributed to much worse detection in widget types, due to their under-representation in the dataset. However, the curve showcases better performance in the same widget types of the random dataset, further indicating that a subset of widget types is more suitable for detection in test automation processes.
+\begin{figure}[H]
     \caption{Design dataset training - F1 curve}
     \centering
     \includegraphics[width=\textwidth]{PICs/train373/F1_curve.png}
     \label{fig:design-training-f1}
 \end{figure}
-\clearpage
 \subsection{Random based dataset}
-The used random dataset contains 15 different widget types of \ac{lvgl} in varying positions and widget styles (excluding container style), where each widget is represented about 150 times, as showcased in Fig.\ref{fig:random-widget-metrics}. The total amount of widgets in the dataset is 2250, spread over 406 image files.\\
-\begin{figure}
+The used random dataset contains 15 different widget types of \ac{lvgl} in varying positions and widget styles (excluding container style), where each widget is represented about 150 times, as showcased in Fig.\ref{fig:random-widget-metrics}. The total amount of widgets in the dataset is 2250, spread over 406 image files.
+In the dataset, each image contained 6 widget instances. The dataset is uploaded to the repository of the paper \autocite{ReleaseFinalPaper} and can be referenced by ID \code{04da75baa7084aee83f3b31602c408c2}.
+\begin{figure}[H]
     \caption{Generator v2 iteration metrics for random dataset}
     \centering
     \includegraphics[width=\textwidth]{random_widget_metrics.png}
     \label{fig:random-widget-metrics}
 \end{figure}
-In the dataset, each image contained 6 widget instances. The dataset is uploaded to the repository of the paper \autocite{ReleaseFinalPaper} and can be referenced by ID \code{04da75baa7084aee83f3b31602c408c2}.
 \subsection{Design based dataset}
 The design dataset has 145 design files. Not all designs could be generated, so only an output of 132 generated images was achieved. Due to the described distortion issue in the generator, the dataset had to be manually corrected by removing broken images and adding in replacements of other design generations. The corrected design dataset contains 186 images.\\
 Since the process of adding in images was performed manually, an exact widget count cannot be given, but is estimated to contain roughly 550 widgets. In Fig.\ref{fig:design-training-labels} the label distribution of the dataset can be seen.\\
 Certain widget types were definitely more preferred by the \ac{llm}, while three (roller, scale, spinbox) are not represented at all. For the design mode it is inherently more difficult to create a balance in distribution, as certain widget types like buttons or labels will always be over-represented when trying to create realistic looking \ac{ui}.
 The original design dataset with some image distortions is referenced by ID \code{5c8e248bdcc24ee2bb57760f0961c690}. The manually corrected version is referenced by ID \code{2fe5e8b06a6249fcb9360c9645e0f7a6}. Both are uploaded to the repository of the paper \autocite{ReleaseFinalPaper}.
-\section{Impact of style variation}
-An important factor discovered during the research is the importance of style variation when training a \ac{yolo} model on \ac{ui} image data. Given that in the real-world \acp{ui} need to appeal to humans and also be usable by them, it is important to incorporate style variations into training datasets. This avoids over-optimized datasets illustrating best-case detection scenarios where individual widget features would be more easily detected by the model. Incorporating themes and contexts into artificially generated \ac{ui} brings the benefit of creating datasets, that are more aligned with worst-case detection scenarios, where individual widgets need to be differentiated with better precision. It is recommended to experiment with outlines and other style properties when creating such datasets and training future models in the context of \ac{ui} widget detection.
+\section{Impact of variation}
+An important factor discovered during the research is the importance of variation when training a \ac{yolo} model on \ac{ui} image data. Given that in the real-world \acp{ui} need to appeal to humans and are generally conforming to certain visual expectations, it is important to incorporate many variations (style, size, placement, nesting, ...) into training datasets. This avoids over-optimized datasets illustrating best-case detection scenarios where individual widget features would be more easily detected by the model. Incorporating themes and contexts into artificially generated \ac{ui} brings the benefit of creating datasets, that are more aligned with worst-case detection scenarios, where individual widgets need to be differentiated with better precision. It is recommended to experiment with all kinds of visual widget properties when creating such datasets and training future models in the context of \ac{ui} widget detection.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of discussion
 \chapter{Discussion}
-While the results of the model on the synthesized datasets looks promising, they are far from being usable when used on real data. The output models of both final runs were used in a prediction test against design mock-ups of a new \ac{ui} design. This test showcased that the models perform much worse or not at all when faced with unseen complexity in widget style, nested widgets, used symbols and fonts. In the test, both models were not able to properly predict all widgets. The most promising type in those test results was the button, which was not only often correctly identified but also with a much higher confidence than the rest. One has to keep in mind that these proprietary designs are far more advanced than what the generator could provide, which means that that further development and refinement in the generation process would be necessary, in order for the models to deliver better performance. Due to company secrets, it was not possible to showcase those test images in the thesis.\\
-In regards to the stated research questions the viability of the \ac{ml} object detection approach is reasonably possible, but a definitive answer cannot be given as the initial test on a real user interface was a failure. Further development in the created generators is necessary, which will be conducted at the discretion of Schrack Seconet.
+While the results of the model on the synthesized datasets looks promising, they are far from being usable when used on real data. The output models of both final runs were used in a prediction test against design mock-ups of a new \ac{ui} design. The test showed, that complex types (nested widgets) are confused with other simple types like switch that are looking similar. The additional usage of different fonts and also symbols made the model confuse simple buttons with types like arc. In the real data test, it was determined that the models perform much worse or not at all when faced with complexity in widget style, nested widgets, used symbols and fonts. This is largely attributed to the fact, that this complexity is not represented in the training datasets. They require additional implementation and improvement in the generation process for better model results on real data. In the test, both models were not able to properly predict most widgets. The most promising type in those test results was the switch and button, which was not only often correctly identified but also with a much higher confidence than the rest. One has to keep in mind that these proprietary designs are far more advanced than what the generator could provide, so bad results were expected. It was however an indicator as to what further improvements are most necessary and are aligned with the results determined with the artificial \acp{ui} datasets. Due to company secrets, it was not possible to showcase those test images in the thesis.\\
+In regards to the stated research questions the viability of the \ac{ml} object detection approach is reasonably possible, even though the definitive answer in the real test is negative. By further improving the dataset generation with more complex features and variation, it is anticipated that model performance will increase on real data. Further development in the created generators is necessary, which will be conducted at the discretion of Schrack Seconet.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% End of content
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% Start of listings
 \clearpage % Beginne neue Seite
@@ -689,45 +724,16 @@ In regards to the stated research questions the viability of the \ac{ml} object 
 %\printbib % Literaturverzeichnis LaTeX-Zitier-Standard
 %\printbib{Literature}                                             % Literaturverzeichnis FH-Zitier-Standard
 \clearpage
-
 \listoffigures % Abbildungsverzeichnis
 \clearpage
-
 \listoftables % Tabellenverzeichnis
-\clearpage
-
 \listoflistings % Quellcodeverzeichnis
 \clearpage
-
 \phantomsection
 \addcontentsline{toc}{chapter}{\listacroname}
 \chapter*{\listacroname}
 % TODO REMOVE UNUSED ACRONYMS AT THE END OF WRITING
 \begin{acronym}
-    % \acro{api}[API]{Application Programming Interface}
-    % \acro{yoloAlt}[YOLO]{You only live once}
-    % \acro{yolo}[YOLO]{You Only Look Once}
-    % \acro{yolo8}[YOLOv8]{YOLO version 8 by ultralytics}
-    % \acro{ui}[UI]{user interface}
-    % \acro{gui}[GUI]{graphical user interface}
-    % \acro{ta}[TA]{test automation}
-    % \acro{sut}[SUT]{system under test}
-    % \acro{json}[JSON]{JavaScript Object Notation}
-    % \acro{cli}[CLI]{Command-line interface}
-    % \acro{mcu}[MCU]{Microcontroller unit}
-    % \acro{led}[LED]{Light Emitting Diode}
-    % \acro{lvgl}[LVGL]{Light and versatile graphics library}
-    % \acro{fas}[FAS]{fire alarm system}
-    % \acro{hcs}[HCS]{health care system}
-    % \acro{ml}[ML]{machine learning}
-    % \acro{hpo}[HPO]{hyper-parameter optimization}
-    % \acro{iou}[IoU]{Intersection over Union}
-    % \acro{map}[mAP]{mean average precision}
-    % \acro{llm}[LLM]{large language model}
-    % \acro{gpt}[GPT]{generative pre-trained transformer}
-    % \acro{cnn}[CNN]{Convolutional Neural Network}
-    % \acro{vcip}[VCIP]{Visocall IP}
-    % \acro{vgt}[VGT]{visual GUI testing}
     \acro{api}[API]{Application Programming Interface}
     \acro{cli}[CLI]{Command-line interface}
     \acro{cnn}[CNN]{Convolutional Neural Network}
@@ -740,9 +746,9 @@ In regards to the stated research questions the viability of the \ac{ml} object 
     \acro{json}[JSON]{JavaScript Object Notation}
     \acro{led}[LED]{Light Emitting Diode}
     \acro{llm}[LLM]{large language model}
-    \acro{lvgl}[LVGL]{Light and versatile graphics library}
+    \acro{lvgl}[LVGL]{Light and Versatile Graphics Library}
     \acro{map}[mAP]{mean average precision}
-    \acro{mcu}[MCU]{Microcontroller unit}
+    \acro{mcu}[MCU]{microcontroller unit}
     \acro{ml}[ML]{machine learning}
     \acro{sut}[SUT]{system under test}
     \acro{ta}[TA]{test automation}
